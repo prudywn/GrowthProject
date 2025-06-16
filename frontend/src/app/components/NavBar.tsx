@@ -46,15 +46,7 @@ export default function Navbar() {
       {/* Mobile Slide-in Menu with Overlay */}
       {menuOpen && (
         <>
-          {/* Overlay (dimmed background) */}
-          <div
-            className="fixed inset-0 transition-opacity bg-black bg-opacity-50 duration-300"
-            onClick={() => setIsMenuOpen(false)}
-          ></div>
-
-          {/* Slide-in Menu Panel */}
           <div className="fixed top-0 right-0 h-[80vh] w-1/2 sm:w-[400px] bg-[#E1F2FE]  shadow-lg transition-transform duration-300 transform translate-x-0">
-            {/* Close button */}
             <div className="flex justify-end p-4 mr-3 text-[#195872] ">
               <button
                 onClick={() => setIsMenuOpen(false)}
