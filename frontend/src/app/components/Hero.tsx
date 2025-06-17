@@ -75,7 +75,7 @@ export default function HeroSection() {
       {/* Animated Stats */}
       <div
         ref={statsRef}
-        className="mt-12 bg-white bg- rounded-full py-6 px-4 flex flex-wrap justify-around text-center shadow-sm max-w-6xl mx-auto"
+        className="mt-12 bg-white md:rounded-full py-6 px-4 flex flex-wrap justify-around text-center shadow-sm max-w-6xl mx-auto rounded-3xl"
       >
         {stats.map((stat, index) => (
           <motion.div

@@ -46,6 +46,11 @@ export default function Navbar() {
       {/* Mobile Slide-in Menu with Overlay */}
       {menuOpen && (
         <>
+          <div
+            className="fixed inset-0 bg-black opacity-50 "
+            onClick={() => setIsMenuOpen(true)}
+            aria-label="Close menu overlay"
+          ></div>
           <div className="fixed top-0 right-0 h-[80vh] w-1/2 sm:w-[400px] bg-[#E1F2FE]  shadow-lg transition-transform duration-300 transform translate-x-0">
             <div className="flex justify-end p-4 mr-3 text-[#195872] ">
               <button
