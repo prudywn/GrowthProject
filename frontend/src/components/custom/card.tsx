@@ -3,7 +3,7 @@ import Image from "next/image";
 type CardProps = {
   title: string;
   description: string;
-  imageSrc: string;
+  imageSrc?: string;
   className?: string;
 };
 
@@ -12,7 +12,7 @@ export const Card = ({ title, description, imageSrc }: CardProps) => {
     <div className="bg-white shadow-md rounded-[48px] overflow-hidden w-full max-w-xs mx-auto text-center  min-w-[85%] md:min-w-0 snap-center flex-shrink-0">
       <div className="h-36 w-full overflow-hidden rounded-t-[48px]">
         <Image
-          src={imageSrc}
+          src={imageSrc || ""}
           alt=""
           title={title}
           width={400}

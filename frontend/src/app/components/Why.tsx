@@ -73,7 +73,6 @@ export default function WhyGrowthPartners() {
         </div>
 
         {/* Mobile stacked layout (below md) */}
-        {/* Mobile stacked layout (below md) */}
         <div className="flex flex-col gap-6 lg:hidden md:hidden">
           {cardData.map((card, index) => (
             <motion.div

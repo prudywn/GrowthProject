@@ -50,10 +50,10 @@ export default function HeroSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <button className="bg-[#195872] text-white px-6 py-3 rounded-full font-medium hover:opacity-90 transition">
+            <button className="bg-[#195872] text-white px-6 py-3 rounded-full font-medium hover:opacity-90 transition cursor-pointer">
               Start Your Transformation
             </button>
-            <button className="border border-[#195872] text-[#195872] px-6 py-3 rounded-full font-medium hover:bg-[#195872] hover:text-white transition">
+            <button className="border border-[#195872] text-[#195872] px-6 py-3 rounded-full font-medium bg-white cursor-pointer">
               Learn More
             </button>
           </div>
@@ -74,7 +74,7 @@ export default function HeroSection() {
       {/* Animated Stats */}
       <div
         ref={statsRef}
-        className="mt-12 bg-white md:rounded-full py-6 px-4 flex flex-wrap justify-around text-center shadow-sm max-w-6xl mx-auto rounded-3xl"
+        className="mt-12 bg-white/45 md:rounded-full py-6 px-4 flex flex-wrap justify-around text-center shadow-sm max-w-6xl mx-auto rounded-3xl"
       >
         {stats.map((stat, index) => (
           <motion.div
@@ -88,7 +88,7 @@ export default function HeroSection() {
             <span className="text-2xl md:text-3xl font-bold text-[#195872]">
               {stat.value}
             </span>
-            <span className="text-sm md:text-base text-[#195872]">
+            <span className="text-sm md:text-base font-bold text-[#195872]">
               {stat.label}
             </span>
           </motion.div>
