@@ -2,14 +2,14 @@
 import { useRef, useState } from "react";
 import { Card } from "@/components/custom/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
+
 import { motion } from "framer-motion";
 
 const cardData = [
   {
-    title: "Philosophy",
+    title: "Sales Psychometrics",
     description:
-      "Sales training must deliver ROI, from design to post-training reinforcement.",
+      "Unlock the hidden drivers behind every 'yes'—master Sales Psychometrics and start selling with science, not guesswork",
     imageSrc: "/images/philosophy.jpg",
   },
   {
@@ -26,7 +26,7 @@ const cardData = [
   },
 ];
 
-export default function WhyGrowthPartners() {
+export default function Courses() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [scrollIndex, setScrollIndex] = useState(1);
 
@@ -47,15 +47,22 @@ export default function WhyGrowthPartners() {
   };
 
   return (
-    <section className="py-16 px-4 max-w-7xl mx-auto text-center space-y-12">
-      <div className="text-start">
-        <h2 className="md:text-5xl text-3xl  font-bold text-[#195872]">
-          Why Growth Partners
+    <section className="py-16 px-4 max-w-7xl mx-auto text-center space-y-12 bg-[#E1F2FE]">
+      <div className="text-start ml-4">
+        <h2 className="md:text-5xl text-3xl font-bold text-[#195872]">
+          Our Training Courses
         </h2>
-        <p className="mt-4 text-black">
-          The leading consultancy dedicated to driving measurable sales
-          performance improvement in the region.
+        <p className="mt-4 text-[#4D4D4D]">
+          Our courses offer comprehensive sales training solutions designed to
+          drive measurable results and sustainable growth for your business.
         </p>
+
+        {/* See More Courses button in small screens */}
+        <div className="flex justify-end mt-4 md:hidden">
+          <button className="rounded-full cursor-pointer w-[200px] bg-[#195872] p-2 text-white text-sm">
+            See More Courses {"->"}
+          </button>
+        </div>
       </div>
 
       {/* Cards Section */}
@@ -129,55 +136,17 @@ export default function WhyGrowthPartners() {
       </div>
 
       {/* Bottom Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3  gap-2 mt-12">
-        <div className="flex flex-col lg:flex-row items-center text-[#195872]">
-          <div className="border rounded-full  px-2 py-1 bg-[#E1F2FE] mr-2">
-            <Image
-              width={20}
-              height={20}
-              src="/images/octicon_graph.png"
-              alt=" "
-              className="mb-2"
-            />
-          </div>
-          <div className="flex justify-center flex-col">
-            <h4 className="font-bold md:text-2xl text-lg ">
-              High Performing Organization
-            </h4>
-            <p className="text-base">Strategies, Processes, Structures</p>
-          </div>
-        </div>
-        <div className="flex justify-center flex-col lg:flex-row items-center text-[#195872]">
-          <div className="border rounded-full  px-2 py-1 bg-[#E1F2FE] mr-2">
-            <Image
-              width={20}
-              height={20}
-              src="/images/graph-bar.png"
-              alt=" "
-              className="mb-2"
-            />
-          </div>
-          <div className="flex flex-col">
-            <h4 className="font-bold md:text-2xl text-lg">Increase Sales</h4>
-            <p className="text-base">Sell better, sell more</p>
-          </div>
-        </div>
-        <div className="flex justify-center flex-col lg:flex-row items-center text-[#195872]">
-          <div className="border rounded-full  px-2 py-1 bg-[#E1F2FE] mr-2">
-            <Image
-              width={20}
-              height={20}
-              src="/images/award.png"
-              alt=" "
-              className="mb-2"
-            />
-          </div>
-          <div className="flex flex-col">
-            <h4 className="font-bold text-lg md:text-2xl">
-              Winning Sales Team
-            </h4>
-            <p className="text-base">Skilled, Motivated, Professional</p>
-          </div>
+      <div className="flex justify-between md:flex-row flex-col space-y-2 mt-12 mx-6">
+        <p className="max-w-[550px] text-[#4D4D4D] text-lg text-start">
+          We can also offer Customised Courses based on your specifications on
+          the topic of sales
+        </p>
+
+        {/* Desktop "See More Courses" Button */}
+        <div className="hidden md:block">
+          <button className="rounded-full cursor-pointer w-[230px] bg-[#195872] p-2 text-white">
+            See More Courses {"->"}
+          </button>
         </div>
       </div>
     </section>

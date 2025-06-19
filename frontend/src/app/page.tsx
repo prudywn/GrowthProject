@@ -1,3 +1,5 @@
+import Companies from "./components/Companies";
+import Courses from "./components/Courses";
 import HeroSection from "./components/Hero";
 import Navbar from "./components/NavBar";
 import WhyGrowthPartners from "./components/Why";
@@ -8,6 +10,8 @@ export default function Home() {
       <Navbar />
       <HeroSection />
       <WhyGrowthPartners />
+      <Courses />
+      <Companies />
     </div>
   );
 }

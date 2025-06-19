@@ -4,6 +4,7 @@ type CardProps = {
   title: string;
   description: string;
   imageSrc: string;
+  className?: string;
 };
 
 export const Card = ({ title, description, imageSrc }: CardProps) => {

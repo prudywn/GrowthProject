@@ -23,7 +23,6 @@ export default function HeroSection() {
       transition: {
         delay: i * 0.2,
         duration: 0.6,
-        ease: "easeOut", // use a valid string easing
       },
     }),
   };
