@@ -23,7 +23,7 @@ export default function Navbar() {
         <div className="hidden lg:flex ">
           <NavLink href="/" label="Home" />
           <NavLink href="/about" label="About" />
-          <NavLink href="/services" label="Services" />
+          <NavLink href="/resources" label="Resources" />
           <NavLink href="/contact" label="Contact" />
         </div>
         <div className="hidden lg:flex">
