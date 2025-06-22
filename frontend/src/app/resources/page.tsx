@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import FeaturedArticles from "../components/FeaturedArticles";
+import LatestArticles from "../components/LatestArticles";
 
 export default function page() {
   return (
@@ -15,6 +16,7 @@ export default function page() {
         </p>
       </div>
       <FeaturedArticles />
+      <LatestArticles />
     </div>
   );
 }

@@ -29,7 +29,7 @@ interface Article {
   readTime: string;
 }
 
-export default function FeaturedArticles() {
+export default function LatestArticles() {
   const [articles, setArticles] = useState<Article[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -76,58 +76,63 @@ export default function FeaturedArticles() {
   }, []);
 
   return (
-    <section className="py-10 px-4 max-w-[1200px] mx-auto relative">
-      <h1 className="text-[#195872] text-start md:text-4xl text-3xl font-bold py-4">
-        Featured Articles
-      </h1>
-
-      {/* Arrows */}
-      <div className="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 z-10">
-        <button
-          onClick={() => scrollToIndex(currentSlide - 1)}
-          className="bg-[#E1F2FE] border shadow p-2 rounded-full"
-        >
-          <ChevronLeft />
-        </button>
-      </div>
-      <div className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 z-10">
-        <button
-          onClick={() => scrollToIndex(currentSlide + 1)}
-          className="bg-[#E1F2FE] border shadow p-2 rounded-full"
-        >
-          <ChevronRight />
-        </button>
-      </div>
-
-      <div
-        ref={scrollRef}
-        className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth space-x-4 no-scrollbar"
-      >
-        {loading
-          ? Array.from({ length: 3 }).map((_, i) => (
-              <ArticleCardSkeleton key={i} />
-            ))
-          : articles
-              .slice(0, 3)
-              .map((article) => (
-                <ArticleCard key={article._id} article={article} />
-              ))}
-      </div>
-
-      {/* Dots */}
-      {!loading && (
-        <div className="flex justify-center mt-4 space-x-2">
-          {articles.map((_, idx) => (
-            <div
-              key={idx}
-              className={clsx(
-                "h-2 w-2 rounded-full transition-all",
-                currentSlide === idx ? "bg-[#195872]" : "bg-gray-300"
-              )}
-            />
-          ))}
+    <>
+      <section className="py-10 px-4 max-w-[1200px] mx-auto relative">
+        <h1 className="text-[#195872] text-start md:text-4xl text-3xl font-bold py-4">
+          Latest Articles
+        </h1>
+        <p className="text-[#4D4D4D] text-base pb-3">
+          Get the latest insights and strategies from top sales professionals
+          around the globe.
+        </p>
+        {/* Arrows */}
+        <div className="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 z-10">
+          <button
+            onClick={() => scrollToIndex(currentSlide - 1)}
+            className="bg-[#E1F2FE] border shadow p-2 rounded-full"
+          >
+            <ChevronLeft />
+          </button>
         </div>
-      )}
-    </section>
+        <div className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 z-10">
+          <button
+            onClick={() => scrollToIndex(currentSlide + 1)}
+            className="bg-[#E1F2FE] border shadow p-2 rounded-full"
+          >
+            <ChevronRight />
+          </button>
+        </div>
+
+        <div
+          ref={scrollRef}
+          className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth space-x-4 no-scrollbar"
+        >
+          {loading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <ArticleCardSkeleton key={i} />
+              ))
+            : articles
+                .slice(0, 4)
+                .map((article) => (
+                  <ArticleCard key={article._id} article={article} />
+                ))}
+        </div>
+
+        {/* Dots */}
+        {!loading && (
+          <div className="flex justify-center mt-4 space-x-2">
+            {articles.map((_, idx) => (
+              <div
+                key={idx}
+                className={clsx(
+                  "h-2 w-2 rounded-full transition-all",
+                  currentSlide === idx ? "bg-[#195872]" : "bg-gray-300"
+                )}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+    </>
   );
 }

@@ -4,6 +4,7 @@ import { Card } from "@/components/custom/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 const cardData = [
   {
@@ -29,6 +30,7 @@ const cardData = [
 export default function Courses() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [scrollIndex, setScrollIndex] = useState(1);
+  const router = useRouter();
 
   const scroll = (dir: "left" | "right") => {
     const container = scrollRef.current;
@@ -44,6 +46,10 @@ export default function Courses() {
         ? Math.max(prev - 1, 0)
         : Math.min(prev + 1, cardData.length - 1)
     );
+  };
+
+  const handleOnClick = () => {
+    router.push("/courses");
   };
 
   return (
@@ -144,7 +150,10 @@ export default function Courses() {
 
         {/* Desktop "See More Courses" Button */}
         <div className="hidden md:block">
-          <button className="rounded-full cursor-pointer w-[230px] bg-[#195872] p-2 text-white">
+          <button
+            className="rounded-full cursor-pointer w-[230px] bg-[#195872] p-2 text-white"
+            onClick={handleOnClick}
+          >
             See More Courses {"->"}
           </button>
         </div>
