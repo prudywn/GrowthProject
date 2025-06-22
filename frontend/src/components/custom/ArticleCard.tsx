@@ -60,13 +60,15 @@ export default function ArticleCard({ article }: ArticleCardProps) {
             </div>
           </div>
 
-          <div className="flex items-center text-base lg:gap-x-40 mt-2 lg:mt-3">
-            <Link href={``}>
-              {/* /articles/${article.slug.current} */}
-              <button className="flex items-center bg-[#195872] text-white px-4 py-2 rounded-full text-base transition mr-8">
-                <BookOpen className="mr-2 w-4 h-4" /> Read Article
-              </button>
-            </Link>
+          <div className="flex items-center  text-base lg:gap-x-40 mt-2 lg:mt-3">
+            {article.slug?.current ? (
+              <Link href={`/articles/${article.slug.current}`}>
+                <button className="flex items-center bg-[#195872] text-white px-4 py-2 rounded-full text-base transition mr-8">
+                  <BookOpen className="mr-2 w-4 h-4" /> Read Article
+                </button>
+              </Link>
+            ) : null}
+
             <p className="text-[#195872] ml-10 flex items-center">
               <Clock className="mr-2 w-4 h-4" />{" "}
               {article.readTime || "5 min read"}

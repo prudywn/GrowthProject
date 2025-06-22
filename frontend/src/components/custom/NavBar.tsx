@@ -24,7 +24,7 @@ export default function Navbar() {
           <NavLink href="/" label="Home" />
           <NavLink href="/about" label="About" />
           <NavLink href="/resources" label="Resources" />
-          <NavLink href="/contact" label="Contact" />
+          <NavLink href="/contact-us" label="Contact" />
         </div>
         <div className="hidden lg:flex">
           <button className="rounded-full w-[230px] bg-[#195872] p-2 text-white">
@@ -72,7 +72,7 @@ export default function Navbar() {
               <Link href="/resources" onClick={() => setIsMenuOpen(false)}>
                 Resources
               </Link>
-              <Link href="/contact" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/contact-us" onClick={() => setIsMenuOpen(false)}>
                 Contact
               </Link>
               <Link href="/privacy-policy" onClick={() => setIsMenuOpen(false)}>
