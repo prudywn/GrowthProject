@@ -111,6 +111,6 @@ export async function sendAdminCrudNotification(action: 'created' | 'updated' | 
         });
 
     } catch (error) {
-        console.error(`CRITICAL: CRUD action succeeded, but failed to send admin notification email for ${resource}.`, error);
+        console.error(`CRITICAL: CRUD action/operation succeeded, but failed to send admin notification email for ${resource}.`, error);
     }
 } 
