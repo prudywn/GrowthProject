@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "ES2020",                                  /* Set the JavaScript language version for emitted JavaScript */
+    "module": "commonjs",                                /* Specify module code generation */
+    "lib": ["ES2020"],                                   /* Include compatible library declarations for ES2020 */
+    "moduleDetection": "auto",                           /* Automatically detect module format */
+
+    /* Modules */
+    "rootDir": "./src",                                  /* Specify the root folder for source files */
+    "outDir": "./dist",                                  /* Specify output folder for compiled files */
+    "esModuleInterop": true,                             /* Enable interop for CommonJS modules */
+    "forceConsistentCasingInFileNames": true,            /* Ensure consistent casing in imports */
+    "resolveJsonModule": true,                           /* Allow importing .json files */
+    "allowSyntheticDefaultImports": true,                /* Allow default imports from modules with no default export */
+
+    /* Type Checking */
+    "strict": true,                                      /* Enable all strict type-checking options */
+    "noImplicitAny": true,                               /* Disallow implicit 'any' types */
+    "strictNullChecks": true,                            /* Enable strict null checks */
+    "strictFunctionTypes": true,                         /* Ensure function parameter type compatibility */
+    "strictBindCallApply": true,                         /* Check bind/call/apply arguments */
+    "strictPropertyInitialization": true,                /* Ensure class properties are initialized */
+    "noImplicitThis": true,                              /* Disallow 'this' with implied 'any' */
+    "useUnknownInCatchVariables": true,                  /* Use 'unknown' for catch clause variables */
+    "alwaysStrict": true,                                /* Always emit 'use strict' */
+    "noUnusedLocals": true,                              /* Report unused local variables */
+    "noUnusedParameters": true,                          /* Report unused function parameters */
+    "noImplicitReturns": true,                           /* Ensure all code paths in functions return */
+    "noFallthroughCasesInSwitch": true,                  /* Prevent switch case fallthrough */
+
+    /* Emit */
+    "sourceMap": true,                                   /* Generate source maps for debugging */
+    "declaration": true,                                 /* Generate .d.ts files */
+    "declarationMap": true,                              /* Generate source maps for .d.ts files */
+    "noEmitOnError": true,                               /* Prevent emitting files with type errors */
+    "skipLibCheck": true                                 /* Skip type checking for .d.ts files */
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
