@@ -13,47 +13,27 @@ const articleSchema = z.object({
   read_length_minutes: z.number().int().optional(),
 });
 
-export async function getAllArticles(_req: Request, res: Response) {
-  const articles = await articleService.getArticles();
-  res.json(articles);
-}
-
-export async function getSingleArticle(req: Request, res: Response) {
-  const { slug } = req.params;
-  const article = await articleService.getArticleBySlug(slug);
-  if (article) {
-    res.json(article);
-  } else {
-    res.status(404).json({ message: 'Article not found' });
-  }
-}
-
-export async function createNewArticle(req: Request, res: Response, next: NextFunction) {
+export async function getAllArticles(req: Request, res: Response, next: NextFunction) {
   try {
-    const validatedData = articleSchema.parse(req.body);
-    const article = await articleService.createArticle(validatedData);
-    res.status(201).json(article);
+    const articles = await articleService.getArticles();
+    res.json(articles);
   } catch (error) {
     next(error);
   }
 }
 
-export async function updateExistingArticle(req: Request, res: Response, next: NextFunction) {
-  try {
-    const { id } = req.params;
-    const validatedData = articleSchema.partial().parse(req.body);
-    const article = await articleService.updateArticle(id, validatedData);
-    res.json(article);
-  } catch (error) {
-    next(error);
-  }
-}
+const slugSchema = z.object({
+  slug: z.string(),
+});
 
-export async function deleteSingleArticle(req: Request, res: Response, next: NextFunction) {
+export async function getArticle(req: Request, res: Response, next: NextFunction) {
   try {
-    const { id } = req.params;
-    await articleService.deleteArticle(id);
-    res.status(204).send();
+    const { slug } = slugSchema.parse(req.params);
+    const article = await articleService.getArticleBySlug(slug);
+    if (!article) {
+      return res.status(404).json({ message: 'Article not found' });
+    }
+    res.json(article);
   } catch (error) {
     next(error);
   }

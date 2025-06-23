@@ -1,7 +1,31 @@
 import blockContent from './blockContent'
 import category from './category'
-import post from './post'
+import article from './article'
 import author from './author'
 import course from './course'
+import teamMember from './teamMember'
+import trustedClient from './trustedClient'
+import testimonial from './testimonial'
+import coreValue from './coreValue'
+import whyUsPoint from './whyUsPoint'
+import homepageContent from './homepageContent'
+import aboutPageContent from './aboutPageContent'
+import whyUsContent from './whyUsContent'
+import courseLesson from './courseLesson'
 
-export const schemaTypes = [post, author, category, blockContent, course]
+export const schemaTypes = [
+  article,
+  author,
+  category,
+  blockContent,
+  course,
+  teamMember,
+  trustedClient,
+  testimonial,
+  coreValue,
+  whyUsPoint,
+  homepageContent,
+  aboutPageContent,
+  whyUsContent,
+  courseLesson,
+]

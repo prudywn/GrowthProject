@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import * as courseService from '../../services/course.service';
 import { z } from 'zod';
 
@@ -10,19 +10,26 @@ const courseSchema = z.object({
   video_url: z.string().url().optional(),
 });
 
-export async function getAllCourses(req: Request, res: Response) {
-  const category = req.query.category as string | undefined;
-  const courses = await courseService.getCourses(category);
-  res.json(courses);
+export async function getAllCourses(req: Request, res: Response, next: NextFunction) {
+  try {
+    const category = req.query.category as string | undefined;
+    const courses = await courseService.getCourses(category);
+    res.json(courses);
+  } catch (error) {
+    next(error);
+  }
 }
 
-export async function getSingleCourse(req: Request, res: Response) {
-  const { id } = req.params;
-  const course = await courseService.getCourseById(id);
-  if (course) {
+export async function getCourse(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params;
+    const course = await courseService.getCourseById(id);
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
     res.json(course);
-  } else {
-    res.status(404).json({ message: 'Course not found' });
+  } catch (error) {
+    next(error);
   }
 }
 

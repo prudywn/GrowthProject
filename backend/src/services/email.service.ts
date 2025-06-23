@@ -113,4 +113,37 @@ export async function sendAdminCrudNotification(action: 'created' | 'updated' | 
     } catch (error) {
         console.error(`CRITICAL: CRUD action/operation succeeded, but failed to send admin notification email for ${resource}.`, error);
     }
+}
+
+/**
+ * Sends a notification to the admin about a change made in Sanity.
+ */
+export async function sendContentChangeNotification(payload: any): Promise<void> {
+    try {
+        const fromAddress = 'noreply@yourverifieddomain.com';
+        const {_type, _id, title, name} = payload;
+        const displayName = title || name || 'Untitled';
+
+        const html = `
+            <h1>Sanity Content Notification</h1>
+            <p>A change has been made to your website's content via the Sanity Studio.</p>
+            <h2>Details:</h2>
+            <ul>
+                <li><strong>Document Type:</strong> ${_type}</li>
+                <li><strong>Document Name:</strong> ${displayName}</li>
+                <li><strong>Document ID:</strong> ${_id}</li>
+            </ul>
+            <p>You can view the document history in the Sanity Studio.</p>
+        `;
+
+        await resend.emails.send({
+            from: fromAddress,
+            to: websiteOwnerEmail,
+            subject: `[Sanity] Content Change: ${displayName}`,
+            html,
+        });
+
+    } catch (error) {
+        console.error(`CRITICAL: Failed to send Sanity webhook notification email.`, error);
+    }
 } 
