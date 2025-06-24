@@ -29,8 +29,8 @@ export default function HeroSection() {
     }),
   };
 
-  const stats = content
-    ? [
+  const stats = content &&
+     [
         { value: `${content.clientsCount}+`, label: "Trusted Clients" },
         {
           value: `${content.professionalsTrainedCount.toLocaleString()}+`,
@@ -45,7 +45,7 @@ export default function HeroSection() {
           label: "Sales People Recruited",
         },
       ]
-    : [];
+  ;
 
   if (isLoading || !content) {
     return (
@@ -117,7 +117,7 @@ export default function HeroSection() {
         ref={statsRef}
         className="mt-12 bg-white/45 md:rounded-full py-6 px-4 flex flex-wrap justify-around text-center shadow-sm max-w-6xl mx-auto rounded-3xl"
       >
-        {stats.map((stat, index) => (
+        {stats.map((stat: any, index: number) => (
           <motion.div
             key={stat.label}
             custom={index}

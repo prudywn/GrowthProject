@@ -1,6 +1,7 @@
-import { Link, BookOpen, Clock } from "lucide-react";
+import { BookOpen, Clock } from "lucide-react";
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { PortableText, PortableTextBlock } from "@portabletext/react";
 
 interface ArticleCardProps {
@@ -45,7 +46,7 @@ export default function Post({ article }: ArticleCardProps) {
           <h3 className="text-[#195872] font-bold text-lg leading-snug mb-1">
             {article.title}
           </h3>
-          <p className="text-sm text-gray-600 line-clamp-3">
+          <p className="text-base text-gray-600 line-clamp-3">
             {article.body?.[0]?.children?.[0]?.text}
           </p>
         </div>
@@ -57,27 +58,28 @@ export default function Post({ article }: ArticleCardProps) {
               <Image
                 src={article.authorImage.asset.url}
                 alt={article.authorName}
-                width={32}
-                height={32}
+                width={48}
+                height={48}
                 className="rounded-full"
               />
             )}
             <div>
-              <p className="text-sm font-semibold">{article.authorName}</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-base font-semibold">{article.authorName}</p>
+              <p className="text-sm text-gray-500">
                 <PortableText value={article.authorBio} />
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 lg:gap-x-40 mt-2 lg:mt-3">
-            <Link
-              href={`/articles/${article.slug.current}`}
-              className="bg-[#195872] text-white text-base px-4 py-2 rounded-full flex items-center gap-2"
-            >
-              <BookOpen className="w-4 h-4" />
-              Read Article
-            </Link>
+          <div className="flex items-center gap-4 lg:gap-x-8 mt-2 lg:mt-3">
+            {article.slug?.current ? (
+              <Link href={`/articles/${article.slug.current}`}>
+                <button className="bg-[#195872] text-white text-base px-4 py-2 rounded-full flex items-center gap-2">
+                  <BookOpen className="w-4 h-4" />
+                  Read Article
+                </button>
+              </Link>
+            ) : null}
             <span className="text-sm text-gray-500 flex items-center gap-1">
               <Clock className="w-4 h-4" />
               {article.readTime || "5 min"}

@@ -8,7 +8,9 @@ import {
   getAllTestimonialsQuery,
   getAllTrustedClientsQuery,
   getWhyUsContentQuery,
-  getAllWhyUsPointsQuery
+  getAllWhyUsPointsQuery,
+  getMainCoursesQuery,
+  getAllCoursesQuery
 } from "./queries";
 
 export const fetchHomepageContent = async () => {
@@ -49,4 +51,12 @@ export const fetchWhyUsContent = async () => {
 
 export const fetchWhyUsPoints = async () => {
   return await sanityClient.fetch(getAllWhyUsPointsQuery);
+};
+
+export const fetchMainCourses = async () => {
+  return await sanityClient.fetch(getMainCoursesQuery);
+};
+
+export const fetchAllCourses = async () => {
+  return await sanityClient.fetch(getAllCoursesQuery);
 };

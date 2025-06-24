@@ -167,3 +167,12 @@ export const getAllWhyUsPointsQuery = `
     image { asset->{ url } }
   }
 `;
+
+export const getMainCoursesQuery = `
+  *[_type == "course" && category == "main"]{
+    _id,
+    name,
+    description,
+    "imageSrc": image.asset->url
+  }
+`;
