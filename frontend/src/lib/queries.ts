@@ -95,7 +95,7 @@ export const getAllCoreValuesQuery = `
     _id,
     name,
     text,
-    image { asset->{ url } }
+    iconKey
   }
 `;
 
