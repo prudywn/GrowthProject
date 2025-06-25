@@ -4,31 +4,20 @@ import { Card } from "@/components/custom/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-
-const cardData = [
-  {
-    title: "Philosophy",
-    description:
-      "Sales training must deliver ROI, from design to post-training reinforcement.",
-    imageSrc: "/images/philosophy.jpg",
-  },
-  {
-    title: "Sales Results Commitment",
-    description:
-      "Training is part of a larger engine driving measurable sales success.",
-    imageSrc: "/images/sales-result.jpg",
-  },
-  {
-    title: "Approach",
-    description:
-      "Global best practices tailored to local business needs make real impact.",
-    imageSrc: "/images/approach.png",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { fetchWhyUsContent } from "@/lib/fetcher";
 
 export default function WhyGrowthPartners() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [scrollIndex, setScrollIndex] = useState(1);
+
+  // Fetch why us content from Sanity
+  const { data: whyUsContent, isLoading } = useQuery({
+    queryKey: ["whyUsContent"],
+    queryFn: fetchWhyUsContent,
+  });
+
+  const whyUsPoints = whyUsContent?.whyUsPoints || [];
 
   const scroll = (dir: "left" | "right") => {
     const container = scrollRef.current;
@@ -42,19 +31,23 @@ export default function WhyGrowthPartners() {
     setScrollIndex((prev) =>
       dir === "left"
         ? Math.max(prev - 1, 0)
-        : Math.min(prev + 1, cardData.length - 1)
+        : Math.min(prev + 1, whyUsPoints.length - 1)
     );
   };
+
+  if (isLoading) {
+    return <div className="text-center py-20">Loading...</div>;
+  }
 
   return (
     <section className="py-16 px-4 max-w-7xl mx-auto text-center space-y-12">
       <div className="text-start">
         <h2 className="md:text-5xl text-3xl  font-bold text-[#195872]">
-          Why Growth Partners
+          {whyUsContent?.miniboxTitle || "Why Growth Partners"}
         </h2>
         <p className="mt-4 text-black">
-          The leading consultancy dedicated to driving measurable sales
-          performance improvement in the region.
+          {whyUsContent?.sectionDescription ||
+            "The leading consultancy dedicated to driving measurable sales performance improvement in the region."}
         </p>
       </div>
 
@@ -62,30 +55,30 @@ export default function WhyGrowthPartners() {
       <div className="relative">
         {/* Desktop Grid */}
         <div className="hidden lg:grid grid-cols-3 gap-6">
-          {cardData.map((card, index) => (
+          {whyUsPoints.map((point: any, index: number) => (
             <Card
-              key={index}
-              title={card.title}
-              description={card.description}
-              imageSrc={card.imageSrc}
+              key={point._id || index}
+              title={point.title}
+              description={point.reason}
+              imageSrc={point.image?.asset?.url}
             />
           ))}
         </div>
 
         {/* Mobile stacked layout (below md) */}
         <div className="flex flex-col gap-6 lg:hidden md:hidden">
-          {cardData.map((card, index) => (
+          {whyUsPoints.map((point: any, index: number) => (
             <motion.div
-              key={index}
+              key={point._id || index}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.15 }}
               viewport={{ once: true, amount: 0.3 }}
             >
               <Card
-                title={card.title}
-                description={card.description}
-                imageSrc={card.imageSrc}
+                title={point.title}
+                description={point.reason}
+                imageSrc={point.image?.asset?.url}
               />
             </motion.div>
           ))}
@@ -100,12 +93,12 @@ export default function WhyGrowthPartners() {
             ref={scrollRef}
             className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory w-full px-2"
           >
-            {cardData.map((card, index) => (
+            {whyUsPoints.map((point: any, index: number) => (
               <Card
-                key={index}
-                title={card.title}
-                description={card.description}
-                imageSrc={card.imageSrc}
+                key={point._id || index}
+                title={point.title}
+                description={point.reason}
+                imageSrc={point.image?.asset?.url}
               />
             ))}
           </div>
@@ -116,7 +109,7 @@ export default function WhyGrowthPartners() {
 
         {/* Pagination dots (only for md) */}
         <div className="hidden md:flex lg:hidden justify-center gap-2 pt-4">
-          {cardData.map((_, i) => (
+          {whyUsPoints.map((_: any, i: number) => (
             <div
               key={i}
               className={`w-2 h-2 rounded-full ${
@@ -127,7 +120,7 @@ export default function WhyGrowthPartners() {
         </div>
       </div>
 
-      {/* Bottom Row */}
+      {/* Bottom Row (static for now) */}
       <div className="grid grid-cols-1 md:grid-cols-3  gap-2 mt-12">
         <div className="flex flex-col lg:flex-row items-center text-[#195872]">
           <div className="border rounded-full  px-2 py-1 bg-[#E1F2FE] mr-2">

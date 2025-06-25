@@ -13,54 +13,31 @@ import {
   BarChart2,
 } from "lucide-react";
 import { Card } from "@/components/custom/card";
+import { useQuery } from "@tanstack/react-query";
+import { fetchAboutPageContent, fetchTeamMembers } from "@/lib/fetcher";
 
-const values = [
-  {
-    icon: <TrendingUp size={32} className="text-[#195872] mx-auto mb-2" />,
-    title: "Results-Driven",
-    description:
-      "We focus on measurable outcomes and sustainable growth for every client we serve.",
-  },
-  {
-    icon: <Users size={32} className="text-[#195872] mx-auto mb-2" />,
-    title: "People-First",
-    description:
-      "We believe that great sales results come from empowering and developing great people.",
-  },
-  {
-    icon: <Star size={32} className="text-[#195872] mx-auto mb-2" />,
-    title: "Excellence",
-    description:
-      "We maintain the highest standards in everything we do, from training to client service.",
-  },
-  {
-    icon: <BarChart2 size={32} className="text-[#195872] mx-auto mb-2" />,
-    title: "Continuous Growth",
-    description:
-      "We're committed to staying ahead of industry trends and evolving our methodologies.",
-  },
-];
 
-const team = [
-  {
-    title: "Samuel Karuri",
-    description: "CEO",
-    imageSrc: "/images/team1.jpg",
-  },
-  {
-    title: "Samuel Ndubi",
-    description: "CTO",
-    imageSrc: "/images/team2.jpg",
-  },
-  {
-    title: "Samuel Kimani",
-    description: "COO",
-    imageSrc: "/images/team3.jpg",
-  },
-];
+const iconMap: Record<string, React.ReactNode> = {
+  trendingUp: <TrendingUp size={32} className="text-[#195872] mx-auto mb-2" />,
+  users: <Users size={32} className="text-[#195872] mx-auto mb-2" />,
+  star: <Star size={32} className="text-[#195872] mx-auto mb-2" />,
+  barChart2: <BarChart2 size={32} className="text-[#195872] mx-auto mb-2" />,
+};
 
 export default function AboutSections() {
   const teamScrollRef = useRef<HTMLDivElement>(null);
+
+  // Fetch About Page Content (mission, values)
+  const { data: aboutContent, isLoading: aboutLoading } = useQuery({
+    queryKey: ["aboutPageContent"],
+    queryFn: fetchAboutPageContent,
+  });
+
+  // Fetch Team Members
+  const { data: teamMembers, isLoading: teamLoading } = useQuery({
+    queryKey: ["teamMembers"],
+    queryFn: fetchTeamMembers,
+  });
 
   const scrollTeam = (dir: "left" | "right") => {
     const container = teamScrollRef.current;
@@ -72,28 +49,31 @@ export default function AboutSections() {
     });
   };
 
+  // Loading state
+  if (aboutLoading || teamLoading) {
+    return <div className="text-center py-20">Loading...</div>;
+  }
+
   return (
     <section className="space-y-24">
       {/* Our Mission */}
       <div className="bg-[#EAF6FB] px-4 py-16 flex flex-col md:flex-row gap-8 items-center max-w-7xl mx-auto ">
         <div className="md:w-2/3 space-y-4 ml-4">
-          <h2 className="text-4xl font-bold text-[#195872]">Our Mission</h2>
+          <h2 className="text-5xl font-bold text-[#195872]">Our Mission</h2>
           <p className="text-black text-base md:text-lg">
-            To provide high-leverage business growth solutions in the form of
-            ideas, products, and services. We do this through innovation in the
-            solutions we provide and how we deliver them. We aim to see each of
-            our clients maximize returns from the financial and time invested in
-            our services.
+            {aboutContent?.missionStatement}
           </p>
         </div>
         <div className="md:w-1/3 mr-4">
-          <Image
-            src="/images/about.jpg"
-            alt="Our Mission"
-            width={400}
-            height={300}
-            className="rounded-3xl object-cover w-full h-auto"
-          />
+          {aboutContent?.missionImage?.asset?.url && (
+            <Image
+              src={aboutContent.missionImage.asset.url}
+              alt="Our Mission"
+              width={400}
+              height={300}
+              className="rounded-3xl object-cover w-full h-auto"
+            />
+          )}
         </div>
       </div>
 
@@ -103,23 +83,34 @@ export default function AboutSections() {
           Our Values
         </h2>
         <p className="mb-12 text-[#4D4D4D] text-base">
-          These are some of the core principles that guide everything we do
+          {aboutContent?.valuesStatement ||
+            "These are some of the core principles that guide everything we do"}
         </p>
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-          {values.map((value, idx) => (
+          {aboutContent?.coreValues?.map((value: any, idx: number) => (
             <motion.div
-              key={idx}
+              key={value._id || idx}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: idx * 0.1 }}
               viewport={{ once: true }}
               className="bg-white shadow-md rounded-t-[40px] rounded-b-[40px] w-[250px] p-6 text-center"
             >
-              {value.icon}
+              {/* Icon from iconKey, fallback to image if not set */}
+              {value.iconKey && iconMap[value.iconKey]}
+              {!value.iconKey && value.image?.asset?.url && (
+                <Image
+                  src={value.image.asset.url}
+                  alt={value.name}
+                  width={64}
+                  height={64}
+                  className="mx-auto mb-2 rounded-full object-cover"
+                />
+              )}
               <h3 className="text-xl font-bold text-[#195872] mb-2">
-                {value.title}
+                {value.name}
               </h3>
-              <p className="text-base text-[#4D4D4D]">{value.description}</p>
+              <p className="text-base text-[#4D4D4D]">{value.text}</p>
             </motion.div>
           ))}
         </div>
@@ -133,12 +124,12 @@ export default function AboutSections() {
           </h2>
           <div className="relative">
             <div className="hidden md:grid grid-cols-3 gap-6">
-              {team.map((person, index) => (
+              {teamMembers?.map((person: any, index: number) => (
                 <Card
-                  key={index}
-                  title={person.title}
-                  description={person.description}
-                  imageSrc={person.imageSrc}
+                  key={person._id || index}
+                  title={person.name}
+                  description={person.role}
+                  imageSrc={person.image?.asset?.url || "/images/team-placeholder.jpg"}
                 />
               ))}
             </div>
@@ -152,12 +143,12 @@ export default function AboutSections() {
                 ref={teamScrollRef}
                 className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory w-full px-2"
               >
-                {team.map((person, index) => (
+                {teamMembers?.map((person: any, index: number) => (
                   <Card
-                    key={index}
-                    title={person.title}
-                    description={person.description}
-                    imageSrc={person.imageSrc}
+                    key={person._id || index}
+                    title={person.name}
+                    description={person.role}
+                    imageSrc={person.image?.asset?.url || "/images/team-placeholder.jpg"}
                   />
                 ))}
               </div>

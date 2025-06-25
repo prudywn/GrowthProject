@@ -6,7 +6,7 @@ import contactRoutes from './contact.route';
 import clientDataRoutes from './clientData.route';
 import analyticsRoutes from './analytics.route';
 import authRoutes from './auth.route';
-import managementRoutes from './management.route';
+import webhookRoutes from './webhook.route';
 
 const router = Router();
 
@@ -23,7 +23,7 @@ router.use('/client-data', clientDataRoutes);
 router.use('/contact', contactRoutes);
 router.use('/analytics', analyticsRoutes);
 
-// Protected Admin/Management Routes
-router.use('/manage', managementRoutes);
+// Webhook routes
+router.use('/webhooks', webhookRoutes);
 
 export default router; 

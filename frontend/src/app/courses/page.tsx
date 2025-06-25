@@ -1,21 +1,39 @@
 "use client";
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { getAllCoursesQuery } from "@/lib/queries";
-import { sanityClient } from "@/lib/sanity";
 import { Card } from "@/components/custom/card";
 import type { CardProps } from "@/components/custom/card";
+import { useQuery } from "@tanstack/react-query";
+import { fetchAllCourses } from "@/lib/fetcher";
+
+// Add Course type for all courses
+interface Course {
+  _id: string;
+  title: string;
+  description: string;
+  imageSrc: string;
+}
 
 export default function CoursesPage() {
-  const [courses, setCourses] = useState<CardProps[]>([]);
+  const { data: courses = [], isLoading, isError } = useQuery<Course[]>({
+    queryKey: ["allCourses"],
+    queryFn: fetchAllCourses,
+  });
 
-  useEffect(() => {
-    async function fetchCourses() {
-      const courses = await sanityClient.fetch(getAllCoursesQuery);
-      setCourses(courses);
-    }
-    fetchCourses();
-  }, []);
+  if (isLoading) {
+    return (
+      <section className="py-12 px-4 max-w-7xl mx-auto">
+        <div className="text-center py-20">Loading courses...</div>
+      </section>
+    );
+  }
+
+  if (isError) {
+    return (
+      <section className="py-12 px-4 max-w-7xl mx-auto">
+        <div className="text-center py-20 text-red-500">Failed to load courses.</div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-12 px-4 max-w-7xl mx-auto">
@@ -30,7 +48,7 @@ export default function CoursesPage() {
 
       {/* Horizontal Scroll on Small Screens */}
       <div className="md:hidden flex gap-6 overflow-x-auto snap-x snap-mandatory px-1 pb-4">
-        {courses.map((course, index) => (
+        {courses.map((course: Course, index: number) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 40 }}
@@ -45,7 +63,7 @@ export default function CoursesPage() {
 
       {/* Grid View on Medium+ Screens */}
       <div className="hidden md:grid md:grid-cols-3 gap-10">
-        {courses.map((course, index) => (
+        {courses.map((course: Course, index: number) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 40 }}

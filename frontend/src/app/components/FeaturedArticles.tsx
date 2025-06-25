@@ -2,10 +2,10 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import { sanityClient } from "@/lib/sanity";
-import { getAllPostsQuery } from "@/lib/queries";
 import ArticleCard from "@/components/custom/ArticleCard";
 import ArticleCardSkeleton from "@/components/custom/ArticleCardSkeleton";
+import { useQuery } from "@tanstack/react-query";
+import { fetchArticles } from "@/lib/fetcher";
 
 interface Article {
   _id: string;
@@ -30,25 +30,12 @@ interface Article {
 }
 
 export default function FeaturedArticles() {
-  const [articles, setArticles] = useState<Article[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    async function fetchArticles() {
-      setLoading(true);
-      try {
-        const posts = await sanityClient.fetch(getAllPostsQuery);
-        setArticles(posts);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchArticles();
-  }, []);
+  const { data: content = [], isLoading } = useQuery({
+    queryKey: ["articles"],
+    queryFn: fetchArticles,
+  });
 
   const scrollToIndex = (index: number) => {
     if (scrollRef.current) {
@@ -103,21 +90,21 @@ export default function FeaturedArticles() {
         ref={scrollRef}
         className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth space-x-4 no-scrollbar"
       >
-        {loading
+        {isLoading
           ? Array.from({ length: 3 }).map((_, i) => (
               <ArticleCardSkeleton key={i} />
             ))
-          : articles
+          : content
               .slice(0, 3)
-              .map((article) => (
+              .map((article: Article) => (
                 <ArticleCard key={article._id} article={article} />
               ))}
       </div>
 
       {/* Dots */}
-      {!loading && (
+      {!isLoading && (
         <div className="flex justify-center mt-4 space-x-2">
-          {articles.map((_, idx) => (
+          {content.map((_: Article, idx: number) => (
             <div
               key={idx}
               className={clsx(
