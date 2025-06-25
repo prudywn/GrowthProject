@@ -16,6 +16,7 @@ import { Card } from "@/components/custom/card";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAboutPageContent, fetchTeamMembers } from "@/lib/fetcher";
 
+
 const iconMap: Record<string, React.ReactNode> = {
   trendingUp: <TrendingUp size={32} className="text-[#195872] mx-auto mb-2" />,
   users: <Users size={32} className="text-[#195872] mx-auto mb-2" />,

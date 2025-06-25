@@ -85,7 +85,8 @@ export const getAboutPageContentQuery = `
       name,
       text,
       iconKey
-    }
+    },
+    ceoVideoUrl
   }
 `;
 

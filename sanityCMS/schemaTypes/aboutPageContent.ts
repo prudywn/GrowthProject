@@ -17,5 +17,6 @@ export default {
       type: 'array',
       of: [{ type: 'reference', to: { type: 'coreValue' } }],
     },
+    { name: 'ceoVideoUrl', title: "C.E.O Video URL", type: 'url' },
   ],
 } 
