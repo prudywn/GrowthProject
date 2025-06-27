@@ -2,25 +2,18 @@
 import { TestimonialsCard } from "@/components/custom/testimonials-card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useRef, useState } from "react";
-
-const cardData = [
-  {
-    description:
-      "GrowthPartners transformed our entire sales approach. Our team's performance improved by 45% within just 3 months of their training program. The results speak for themselves.",
-  },
-  {
-    description:
-      "GrowthPartners transformed our entire sales approach. Our team's performance improved by 45% within just 3 months of their training program. The results speak for themselves.",
-  },
-  {
-    description:
-      "GrowthPartners transformed our entire sales approach. Our team's performance improved by 45% within just 3 months of their training program. The results speak for themselves.",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { fetchTestimonials } from "@/lib/fetcher";
 
 export default function ClientsSay() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [scrollIndex, setScrollIndex] = useState(1);
+
+  // Fetch testimonials from Sanity
+  const { data: testimonials = [], isLoading } = useQuery({
+    queryKey: ["testimonials"],
+    queryFn: fetchTestimonials,
+  });
 
   const scroll = (dir: "left" | "right") => {
     const container = scrollRef.current;
@@ -34,9 +27,14 @@ export default function ClientsSay() {
     setScrollIndex((prev) =>
       dir === "left"
         ? Math.max(prev - 1, 0)
-        : Math.min(prev + 1, cardData.length - 1)
+        : Math.min(prev + 1, testimonials.length - 1)
     );
   };
+
+  if (isLoading) {
+    return <div className="text-center py-20">Loading testimonials...</div>;
+  }
+
   return (
     <section className="py-24 px-4 max-w-7xl ml-4 mr-4 text-center space-y-12">
       <div className="text-start">
@@ -44,7 +42,7 @@ export default function ClientsSay() {
           What Our Clients Say
         </h2>
         <p className="mt-4 text-black">
-          Here’s what some of our clients from high profile businesses had to
+          Here's what some of our clients from high profile businesses had to
           say after working with us.
         </p>
       </div>
@@ -53,8 +51,8 @@ export default function ClientsSay() {
       <div className="relative">
         {/* Desktop Grid */}
         <div className="hidden lg:grid grid-cols-3 gap-6">
-          {cardData.map((card, index) => (
-            <TestimonialsCard key={index} description={card.description} />
+          {testimonials.map((testimonial: any, index: number) => (
+            <TestimonialsCard key={testimonial._id || index} description={testimonial.responseText} />
           ))}
         </div>
 
@@ -67,8 +65,8 @@ export default function ClientsSay() {
             ref={scrollRef}
             className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory w-full px-2"
           >
-            {cardData.map((card, index) => (
-              <TestimonialsCard key={index} description={card.description} />
+            {testimonials.map((testimonial: any, index: number) => (
+              <TestimonialsCard key={testimonial._id || index} description={testimonial.responseText} />
             ))}
           </div>
           <button onClick={() => scroll("right")} className="p-2">
@@ -78,7 +76,7 @@ export default function ClientsSay() {
 
         {/* Pagination dots (only for md) */}
         <div className=" flex lg:hidden justify-center gap-2 pt-4">
-          {cardData.map((_, i) => (
+          {testimonials.map((_: any, i: number) => (
             <div
               key={i}
               className={`w-2 h-2 rounded-full ${

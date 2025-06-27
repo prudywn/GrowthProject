@@ -14,12 +14,18 @@ export default {
       title: 'Text',
       type: 'text',
     },
+    
     {
-      name: 'image',
-      title: 'Image',
-      type: 'image',
+      name: 'iconKey',
+      title: 'Icon Key',
+      type: 'string',
       options: {
-        hotspot: true,
+        list: [
+          { title: 'Trending Up', value: 'trendingUp' },
+          { title: 'Users', value: 'users' },
+          { title: 'Star', value: 'star' },
+          { title: 'Bar Chart', value: 'barChart2' },
+        ],
       },
     },
   ],

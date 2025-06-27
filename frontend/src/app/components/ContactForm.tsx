@@ -11,6 +11,9 @@ export default function ContactForm() {
     roleInfo: "",
     serviceInfo: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -20,8 +23,40 @@ export default function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Send to Supabase later
-    console.log("Form submitted:", formData);
+    setLoading(true);
+    setSuccess("");
+    setError("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          full_name: formData.fullName,
+          email: formData.email,
+          phone_number: formData.phone,
+          company: formData.company,
+          role_description: formData.roleInfo,
+          service_needs: formData.serviceInfo,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || "Something went wrong");
+      }
+      setSuccess("Thank you! Your message has been sent.");
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        company: "",
+        roleInfo: "",
+        serviceInfo: "",
+      });
+    } catch (err: any) {
+      setError(err.message || "Failed to send message.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,6 +66,9 @@ export default function ContactForm() {
         onSubmit={handleSubmit}
         className="lg:col-span-2 bg-white shadow-md rounded-xl p-6 space-y-8"
       >
+        {/* Success/Error Messages */}
+        {success && <div className="text-green-600 font-semibold">{success}</div>}
+        {error && <div className="text-red-600 font-semibold">{error}</div>}
         <div className="grid md:grid-cols-2 gap-4">
           <div className="flex flex-col gap-3">
             <label
@@ -45,7 +83,9 @@ export default function ContactForm() {
               placeholder="John Doe"
               className="input-style"
               onChange={handleChange}
+              value={formData.fullName}
               required
+              disabled={loading}
             />
           </div>
           <div className="flex flex-col gap-3">
@@ -58,7 +98,9 @@ export default function ContactForm() {
               placeholder="Email Address*"
               className="input-style"
               onChange={handleChange}
+              value={formData.email}
               required
+              disabled={loading}
             />
           </div>
           <div className="flex flex-col gap-3">
@@ -71,6 +113,8 @@ export default function ContactForm() {
               placeholder="Phone Number"
               className="input-style"
               onChange={handleChange}
+              value={formData.phone}
+              disabled={loading}
             />
           </div>
           <div className="flex flex-col gap-3">
@@ -86,6 +130,8 @@ export default function ContactForm() {
               placeholder="Company Name"
               className="input-style"
               onChange={handleChange}
+              value={formData.company}
+              disabled={loading}
             />
           </div>
         </div>
@@ -101,7 +147,9 @@ export default function ContactForm() {
             placeholder="Describe your job title, the company or team you work with, and  key responsibilities you handle regularly....."
             className="textarea-style"
             onChange={handleChange}
+            value={formData.roleInfo}
             required
+            disabled={loading}
           />
         </div>
         <div className="flex flex-col gap-3">
@@ -116,14 +164,17 @@ export default function ContactForm() {
             placeholder="Tell us about your training needs, team size and goals......."
             className="textarea-style"
             onChange={handleChange}
+            value={formData.serviceInfo}
+            disabled={loading}
           />
         </div>
 
         <button
           type="submit"
           className="bg-[#195872] text-white rounded-full px-6 py-3 w-full hover:bg-[#144452] transition text-lg"
+          disabled={loading}
         >
-          Send Message
+          {loading ? "Sending..." : "Send Message"}
         </button>
       </form>
 

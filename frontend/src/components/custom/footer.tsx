@@ -1,10 +1,60 @@
 // components/Footer.tsx
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Mail, MapPin, Phone } from "lucide-react";
 
 export default function Footer() {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    phone: "",
+    email: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setSuccess("");
+    setError("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          full_name: formData.fullName,
+          email: formData.email,
+          phone_number: formData.phone,
+          company: "",
+          role_description: "Book a call request from footer",
+          service_needs: "Book a call",
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || "Something went wrong");
+      }
+      setSuccess("Thank you! We'll be in touch soon to schedule your call.");
+      setFormData({
+        fullName: "",
+        phone: "",
+        email: "",
+      });
+    } catch (err: any) {
+      setError(err.message || "Failed to send message.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <footer className="bg-[#195872] text-white">
       <div className="grid lg:grid-cols-2 gap-12 px-3 lg:px-8 py-16">
@@ -14,15 +64,25 @@ export default function Footer() {
             Talk to an Expert
           </h3>
           <p className="text-base mb-6">Start by filling the form below</p>
-          <form className="space-y-4">
+          
+          {/* Success/Error Messages */}
+          {success && <div className="text-green-600 font-semibold mb-4">{success}</div>}
+          {error && <div className="text-red-600 font-semibold mb-4">{error}</div>}
+          
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-base text-[#195872] font-bold mb-1">
                 Full Name*
               </label>
               <input
+                name="fullName"
                 type="text"
                 placeholder="John Doe"
                 className="w-full bg-white px-4 py-2 border rounded-full outline-none"
+                onChange={handleChange}
+                value={formData.fullName}
+                required
+                disabled={loading}
               />
             </div>
             <div>
@@ -30,9 +90,14 @@ export default function Footer() {
                 Phone Number*
               </label>
               <input
+                name="phone"
                 type="text"
                 placeholder="+254 123 456 789"
                 className="w-full bg-white px-4 py-2 border rounded-full outline-none"
+                onChange={handleChange}
+                value={formData.phone}
+                required
+                disabled={loading}
               />
             </div>
             <div>
@@ -40,16 +105,22 @@ export default function Footer() {
                 Email Address*
               </label>
               <input
+                name="email"
                 type="email"
                 placeholder="name@example.com"
                 className="w-full bg-white px-4 py-2 border rounded-full outline-none"
+                onChange={handleChange}
+                value={formData.email}
+                required
+                disabled={loading}
               />
             </div>
             <button
               type="submit"
-              className="w-full bg-[#195872] text-white py-3 text-lg rounded-full  mt-4"
+              className="w-full bg-[#195872] text-white py-3 text-lg rounded-full mt-4 disabled:opacity-50"
+              disabled={loading}
             >
-              Book Call
+              {loading ? "Sending..." : "Book Call"}
             </button>
           </form>
         </div>

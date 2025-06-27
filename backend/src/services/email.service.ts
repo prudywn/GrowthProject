@@ -7,9 +7,17 @@ if (!process.env.RESEND_API_KEY) {
 if (!process.env.EMAIL_USER) {
     throw new Error('EMAIL_USER (the website owner email) is not set in .env file');
 }
+if (!process.env.RESEND_FROM_EMAIL) {
+    throw new Error('RESEND_FROM_EMAIL is not set in .env file');
+}
+if (!process.env.RESEND_FROM_NOREPLY_EMAIL) {
+    throw new Error('RESEND_FROM_NOREPLY_EMAIL is not set in .env file');
+}
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const websiteOwnerEmail = process.env.EMAIL_USER;
+const fromEmail = process.env.RESEND_FROM_EMAIL;
+const fromNoReplyEmail = process.env.RESEND_FROM_NOREPLY_EMAIL;
 
 // A type for the form data to ensure consistency across the application
 export interface ContactFormData {
@@ -55,7 +63,7 @@ function generateUserConfirmationHtml(name: string): string {
 export async function sendContactEmails(formData: ContactFormData): Promise<void> {
     try {
         // IMPORTANT: The 'from' email address MUST be from a domain you have verified in your Resend account.
-        const fromAddress = 'contact@yourverifieddomain.com';
+        const fromAddress = fromEmail;
 
         // Email to the website owner
         await resend.emails.send({
@@ -101,7 +109,7 @@ function generateCrudNotificationHtml(action: string, resource: string, data: an
  */
 export async function sendAdminCrudNotification(action: 'created' | 'updated' | 'deleted', resource: string, data: any): Promise<void> {
     try {
-        const fromAddress = 'noreply@yourverifieddomain.com'; // Use a different from address for system notifications
+        const fromAddress = fromNoReplyEmail; // Use a different from address for system notifications
 
         await resend.emails.send({
             from: fromAddress,
@@ -120,7 +128,7 @@ export async function sendAdminCrudNotification(action: 'created' | 'updated' | 
  */
 export async function sendContentChangeNotification(payload: any): Promise<void> {
     try {
-        const fromAddress = 'noreply@yourverifieddomain.com';
+        const fromAddress = fromNoReplyEmail;
         const {_type, _id, title, name} = payload;
         const displayName = title || name || 'Untitled';
 

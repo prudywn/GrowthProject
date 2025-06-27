@@ -5,32 +5,27 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { fetchMainCourses } from "@/lib/fetcher";
 
-const cardData = [
-  {
-    title: "Sales Psychometrics",
-    description:
-      "Unlock the hidden drivers behind every 'yes'—master Sales Psychometrics and start selling with science, not guesswork",
-    imageSrc: "/images/philosophy.jpg",
-  },
-  {
-    title: "Sales Results Commitment",
-    description:
-      "Training is part of a larger engine driving measurable sales success.",
-    imageSrc: "/images/sales-result.jpg",
-  },
-  {
-    title: "Approach",
-    description:
-      "Global best practices tailored to local business needs make real impact.",
-    imageSrc: "/images/approach.png",
-  },
-];
+// Add CourseCard type
+interface CourseCard {
+  _id: string;
+  name: string;
+  description: string;
+  imageSrc: string;
+}
 
 export default function Courses() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [scrollIndex, setScrollIndex] = useState(1);
   const router = useRouter();
+
+  // Fetch main courses
+  const { data: cardData = [], isLoading, isError } = useQuery<CourseCard[]>({
+    queryKey: ["mainCourses"],
+    queryFn: fetchMainCourses,
+  });
 
   const scroll = (dir: "left" | "right") => {
     const container = scrollRef.current;
@@ -51,6 +46,22 @@ export default function Courses() {
   const handleOnClick = () => {
     router.push("/courses");
   };
+
+  if (isLoading) {
+    return (
+      <section className="py-16 px-4 max-w-7xl mx-auto text-center space-y-12 bg-[#E1F2FE]">
+        <div className="text-center py-20">Loading courses...</div>
+      </section>
+    );
+  }
+
+  if (isError) {
+    return (
+      <section className="py-16 px-4 max-w-7xl mx-auto text-center space-y-12 bg-[#E1F2FE]">
+        <div className="text-center py-20 text-red-500">Failed to load courses.</div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-16 px-4 max-w-7xl mx-auto text-center space-y-12 bg-[#E1F2FE]">
@@ -78,7 +89,7 @@ export default function Courses() {
           {cardData.map((card, index) => (
             <Card
               key={index}
-              title={card.title}
+              title={card.name}
               description={card.description}
               imageSrc={card.imageSrc}
             />
@@ -97,7 +108,7 @@ export default function Courses() {
               viewport={{ once: true, amount: 0.3 }}
             >
               <Card
-                title={card.title}
+                title={card.name}
                 description={card.description}
                 imageSrc={card.imageSrc}
               />
@@ -117,7 +128,7 @@ export default function Courses() {
             {cardData.map((card, index) => (
               <Card
                 key={index}
-                title={card.title}
+                title={card.name}
                 description={card.description}
                 imageSrc={card.imageSrc}
               />

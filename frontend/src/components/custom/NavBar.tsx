@@ -5,9 +5,14 @@ import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [menuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
+  const handleOnClick = () => {
+    router.push("/contact-us");
+  };
   return (
     <nav className="shadow-sm max-w-7xl mx-auto px-6 py-4  ">
       <div className="flex justify-between items-center ">
@@ -27,7 +32,10 @@ export default function Navbar() {
           <NavLink href="/contact-us" label="Contact" />
         </div>
         <div className="hidden lg:flex">
-          <button className="rounded-full w-[230px] bg-[#195872] p-2 text-white">
+          <button
+            className="rounded-full w-[230px] bg-[#195872] p-2 text-white"
+            onClick={handleOnClick}
+          >
             Contact a Sales Expert
           </button>
         </div>
