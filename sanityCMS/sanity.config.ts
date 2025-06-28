@@ -26,6 +26,8 @@ const structure: StructureResolver = (S) =>
       S.divider(),
 
       // Regular document types
+      S.documentTypeListItem('service').title('Services'),
+      S.documentTypeListItem('subService').title('Sub Services'),
       S.documentTypeListItem('article').title('Articles'),
       S.documentTypeListItem('course').title('Courses'),
       S.documentTypeListItem('courseLesson').title('Course Lessons'),

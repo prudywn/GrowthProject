@@ -27,9 +27,9 @@ export async function getCourse(req: Request, res: Response, next: NextFunction)
     if (!course) {
       return res.status(404).json({ message: 'Course not found' });
     }
-    res.json(course);
+    return res.json(course);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
 

@@ -2,23 +2,15 @@
 
 import { useRef, useEffect } from "react";
 import Image from "next/image";
-import { useInView, useAnimation, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { fetchHomepageContent } from "@/lib/fetcher";
 
 export default function HeroSection() {
-  const statsRef = useRef(null);
-  const isInView = useInView(statsRef, { once: true, margin: "-100px" });
-  const controls = useAnimation();
-
   const { data: content, isLoading } = useQuery({
     queryKey: ["homepageContent"],
     queryFn: fetchHomepageContent,
   });
-
-  useEffect(() => {
-    if (isInView) controls.start("visible");
-  }, [isInView, controls]);
 
   const statVariants = {
     hidden: { opacity: 0, y: 40 },
@@ -29,23 +21,25 @@ export default function HeroSection() {
     }),
   };
 
-  const stats = content &&
-     [
-        { value: `${content.clientsCount}+`, label: "Trusted Clients" },
-        {
-          value: `${content.professionalsTrainedCount.toLocaleString()}+`,
-          label: "Sales Professionals",
-        },
-        {
-          value: `${content.yearsOfExperience}+`,
-          label: "Years of Experience",
-        },
-        {
-          value: `${content.peopleRecruitedCount}+`,
-          label: "Sales People Recruited",
-        },
-      ]
-  ;
+  const stats =
+    content && [
+      {
+        value: `${content.clientsCount}+`,
+        label: "Happy Clients",
+      },
+      {
+        value: `${content.professionalsTrainedCount.toLocaleString()}+`,
+        label: "Professionals Trained",
+      },
+      {
+        value: `${content.yearsOfExperience}+`,
+        label: "Years of Experience",
+      },
+      {
+        value: `${content.peopleRecruitedCount}+`,
+        label: "People Recruited",
+      },
+    ];
 
   if (isLoading || !content) {
     return (
@@ -114,22 +108,21 @@ export default function HeroSection() {
 
       {/* Stats */}
       <div
-        ref={statsRef}
-        className="mt-12 bg-white/45 md:rounded-full py-6 px-4 flex flex-wrap justify-around text-center shadow-sm max-w-6xl mx-auto rounded-3xl"
+        className="mt-12 bg-[#195872] md:rounded-full py-8 px-4 flex flex-wrap justify-around text-center shadow-lg max-w-6xl mx-auto rounded-3xl"
       >
         {stats.map((stat: any, index: number) => (
           <motion.div
             key={stat.label}
             custom={index}
             initial="hidden"
-            animate={controls}
+            animate="visible"
             variants={statVariants}
             className="flex flex-col px-4 py-2 min-w-[130px]"
           >
-            <span className="text-2xl md:text-3xl font-bold text-[#195872]">
+            <span className="text-3xl md:text-4xl font-bold text-white">
               {stat.value}
             </span>
-            <span className="text-sm md:text-base font-bold text-[#195872]">
+            <span className="text-sm md:text-base text-white/90">
               {stat.label}
             </span>
           </motion.div>

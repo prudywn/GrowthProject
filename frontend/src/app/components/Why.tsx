@@ -86,7 +86,7 @@ export default function WhyGrowthPartners() {
 
         {/* Carousel for md screens only */}
         <div className="hidden md:flex lg:hidden items-center">
-          <button onClick={() => scroll("left")} className="p-2">
+          <button onClick={() => scroll("left")} className="p-2 rounded-full hover:bg-primary/10 text-primary transition-colors">
             <ChevronLeft />
           </button>
           <div
@@ -102,7 +102,7 @@ export default function WhyGrowthPartners() {
               />
             ))}
           </div>
-          <button onClick={() => scroll("right")} className="p-2">
+          <button onClick={() => scroll("right")} className="p-2 rounded-full hover:bg-primary/10 text-primary transition-colors">
             <ChevronRight />
           </button>
         </div>
@@ -112,8 +112,8 @@ export default function WhyGrowthPartners() {
           {whyUsPoints.map((_: any, i: number) => (
             <div
               key={i}
-              className={`w-2 h-2 rounded-full ${
-                i === scrollIndex ? "bg-slate-600" : "bg-slate-300"
+              className={`w-2 h-2 rounded-full transition-colors ${
+                i === scrollIndex ? "bg-primary" : "bg-primary/20"
               }`}
             />
           ))}

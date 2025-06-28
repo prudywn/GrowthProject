@@ -1,4 +1,5 @@
 import {defineField, defineType} from 'sanity'
+import {AiSuggestInput} from '../components/AiSuggestInput'
 
 export default defineType({
   name: 'course',
@@ -9,11 +10,25 @@ export default defineType({
       name: 'name',
       title: 'Name',
       type: 'string',
+      components: {input: AiSuggestInput},
+      validation: Rule => Rule.required().min(5).max(120)
+    }),
+    defineField({
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {
+        source: 'name',
+        maxLength: 96,
+      },
+      validation: Rule => Rule.required()
     }),
     defineField({
       name: 'description',
       title: 'Description',
       type: 'text',
+      components: {input: AiSuggestInput},
+      validation: Rule => Rule.required().min(50).max(300)
     }),
     defineField({
       name: 'image',
@@ -22,6 +37,7 @@ export default defineType({
       options: {
         hotspot: true,
       },
+      validation: Rule => Rule.required()
     }),
     defineField({
       name: 'category',
@@ -36,7 +52,7 @@ export default defineType({
         ],
         layout: 'radio',
       },
-      validation: (Rule) => Rule.required(),
+      validation: Rule => Rule.required(),
     }),
     defineField({
       name: 'videoUrl',
@@ -45,11 +61,51 @@ export default defineType({
       hidden: ({document}) => document?.category !== 'video_single',
     }),
     defineField({
+      name: 'objectives',
+      title: 'Learning Objectives',
+      type: 'array',
+      of: [{
+        type: 'string',
+        components: {input: AiSuggestInput}
+      }],
+      description: 'What will students learn in this course?',
+      validation: Rule => Rule.min(3).max(10)
+    }),
+    defineField({
       name: 'lessons',
       title: 'Lessons',
       type: 'array',
       of: [{type: 'reference', to: {type: 'courseLesson'}}],
       hidden: ({document}) => document?.category === 'video_single',
     }),
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'object',
+      fields: [
+        {
+          name: 'metaTitle',
+          title: 'Meta Title',
+          type: 'string',
+          components: {input: AiSuggestInput},
+          description: 'Title for search engines (50-60 characters)',
+          validation: Rule => Rule.max(60)
+        },
+        {
+          name: 'metaDescription',
+          title: 'Meta Description',
+          type: 'text',
+          components: {input: AiSuggestInput},
+          description: 'Description for search engines (150-160 characters)',
+          validation: Rule => Rule.max(160)
+        }
+      ]
+    })
   ],
+  preview: {
+    select: {
+      title: 'name',
+      media: 'image',
+    }
+  }
 })
