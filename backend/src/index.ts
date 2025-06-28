@@ -7,7 +7,7 @@ import 'express-async-errors'; // Must be imported before routes
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 // Middleware
 app.use(helmet()); // Apply security headers

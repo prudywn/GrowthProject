@@ -28,6 +28,7 @@ export default function Navbar() {
         <div className="hidden lg:flex ">
           <NavLink href="/" label="Home" />
           <NavLink href="/about" label="About" />
+          <NavLink href="/services" label="Services" />
           <NavLink href="/resources" label="Resources" />
           <NavLink href="/contact-us" label="Contact" />
         </div>
@@ -77,6 +78,9 @@ export default function Navbar() {
               <Link href="/about" onClick={() => setIsMenuOpen(false)}>
                 About
               </Link>
+              <Link href="/services" onClick={() => setIsMenuOpen(false)}>
+                Services
+              </Link>
               <Link href="/resources" onClick={() => setIsMenuOpen(false)}>
                 Resources
               </Link>
@@ -93,7 +97,7 @@ export default function Navbar() {
 
             {/* Footer */}
             <div className="absolute bottom-6 left-8 text-sm text-gray-500">
-              © {new Date().getFullYear()} GrowthPartners Inc. All rights
+              {new Date().getFullYear()} GrowthPartners Inc. All rights
               reserved.
             </div>
           </div>

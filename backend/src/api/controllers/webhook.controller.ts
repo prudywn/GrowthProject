@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from 'express'
+import { Request, Response } from 'express'
 import { sendContentChangeNotification } from '../../services/email.service'
 
 // It's a good practice to use a secret to verify the webhook request
 const SANITY_WEBHOOK_SECRET = process.env.SANITY_WEBHOOK_SECRET
 
-export async function handleSanityWebhook(req: Request, res: Response, next: NextFunction) {
+export async function handleSanityWebhook(req: Request, res: Response): Promise<Response | void> {
   // 1. Verify the secret if it's provided
   if (SANITY_WEBHOOK_SECRET) {
     const signature = req.headers['sanity-webhook-signature']
@@ -29,4 +29,4 @@ export async function handleSanityWebhook(req: Request, res: Response, next: Nex
     // Log any errors in processing, but don't send a response back to Sanity
     console.error('Error processing Sanity webhook:', error)
   }
-} 
+}

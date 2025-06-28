@@ -70,7 +70,22 @@ export const getHomepageContentQuery = `
     clientsCount,
     professionalsTrainedCount,
     yearsOfExperience,
-    peopleRecruitedCount
+    peopleRecruitedCount,
+    servicesSection {
+      title,
+      description,
+      featuredServices[]->{
+        _id,
+        title,
+        shortDescription,
+        slug,
+        mainImage {
+          asset->{
+            url
+          }
+        }
+      }
+    }
   }
 `;
 

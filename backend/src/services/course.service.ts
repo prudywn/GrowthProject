@@ -16,10 +16,18 @@ const courseFields = `
   } | order(lessonNumber asc)
 `
 
-export async function getCourses() {
-  const query = `*[_type == "course"]{${courseFields}}`
-  const data = await sanityClient.fetch(query)
-  return data
+export async function getCourses(category?: string) {
+  let query = `*[_type == "course"`;
+  const params: { [key: string]: any } = {};
+
+  if (category) {
+    query += ` && category == $category`;
+    params.category = category;
+  }
+
+  query += `]{${courseFields}}`;
+  const data = await sanityClient.fetch(query, params);
+  return data;
 }
 
 export async function getCourseById(id: string) {
@@ -27,4 +35,19 @@ export async function getCourseById(id: string) {
   const params = { id }
   const data = await sanityClient.fetch(query, params)
   return data
+}
+
+export async function createCourse(courseData: any) {
+  const data = await sanityClient.create({ _type: 'course', ...courseData });
+  return data;
+}
+
+export async function updateCourse(id: string, courseData: any) {
+  const data = await sanityClient.patch(id).set(courseData).commit();
+  return data;
+}
+
+export async function deleteCourse(id: string) {
+  const data = await sanityClient.delete(id);
+  return data;
 }
