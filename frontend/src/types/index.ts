@@ -13,6 +13,8 @@ export interface SubService {
 export interface SanityService {
   _id: string;
   title: string;
+  slug: { current: string };
+  shortDescription: string;
   description: PortableText;
   mainImage: SanityImage;
   subServices: SubService[];
