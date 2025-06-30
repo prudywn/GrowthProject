@@ -11,11 +11,7 @@ interface Params {
   slug: string;
 }
 
-interface PageProps {
-  params: Params;
-}
-
-export default async function ArticlePage({ params }: PageProps) {
+export default async function ArticlePage({ params }: { params: { slug: string } }) {
   if (!params?.slug) return notFound();
 
   const article = await sanityClient.fetch(getPostBySlugQuery, {
