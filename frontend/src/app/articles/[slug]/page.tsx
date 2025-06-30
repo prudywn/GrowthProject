@@ -6,23 +6,18 @@ import { PortableText } from "@portabletext/react";
 import { Clock } from "lucide-react";
 import RelatedArticles from "@/app/components/RelatedArticles";
 
-interface PageProps {
-  params: {
-    slug: string;
-  };
-}
-
-export default async function ArticlePage({ params }: PageProps) {
-  if (!params?.slug) return notFound();
+export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  if (!resolvedParams?.slug) return notFound();
 
   const article = await sanityClient.fetch(getPostBySlugQuery, {
-    slug: params.slug,
+    slug: resolvedParams.slug,
   });
 
   if (!article) return notFound();
 
   const related = await sanityClient.fetch(getRelatedPostsQuery, {
-    currentSlug: params.slug,
+    currentSlug: resolvedParams.slug,
   });
 
   return (
