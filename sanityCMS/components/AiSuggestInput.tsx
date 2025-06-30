@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { FiMic, FiRefreshCw } from 'react-icons/fi';
 
 // The backend URL where our AI endpoint is hosted
-const API_ENDPOINT = 'http://localhost:3000/api/v1/ai/suggest';
+const API_ENDPOINT = process.env.SANITY_STUDIO_BACKEND_API_ENDPOINT || 'http://localhost:3001/api/v1/ai/suggest';
 
 // Map Sanity schema types to our field types
 const getFieldType = (schemaType: any): string => {
