@@ -26,8 +26,11 @@ export async function generateStaticParams() {
   return slugs.map((slug) => ({ slug: slug.slug }));
 }
 
-export default async function ServicePage({ params }: { params: { slug: string } }) {
-  const service = await sanityFetch<SanityService>(serviceQuery, { slug: params.slug });
+export default async function ServicePage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  if (!resolvedParams?.slug) return notFound();
+
+  const service = await sanityFetch<SanityService>(serviceQuery, { slug: resolvedParams.slug });
 
   if (!service) {
     notFound();
