@@ -2,16 +2,17 @@ import { sanityClient } from "@/lib/sanity";
 import { getPostBySlugQuery, getRelatedPostsQuery } from "@/lib/queries";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-
 import { PortableText } from "@portabletext/react";
 import { Clock } from "lucide-react";
 import RelatedArticles from "@/app/components/RelatedArticles";
 
-interface Params {
-  slug: string;
+interface PageProps {
+  params: {
+    slug: string;
+  };
 }
 
-export default async function ArticlePage({ params }: { params: { slug: string } }) {
+export default async function ArticlePage({ params }: PageProps) {
   if (!params?.slug) return notFound();
 
   const article = await sanityClient.fetch(getPostBySlugQuery, {
@@ -19,6 +20,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   });
 
   if (!article) return notFound();
+
   const related = await sanityClient.fetch(getRelatedPostsQuery, {
     currentSlug: params.slug,
   });
