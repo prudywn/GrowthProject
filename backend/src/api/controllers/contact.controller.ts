@@ -12,6 +12,7 @@ const contactSchema = z.object({
 });
 
 export async function handleContactForm(req: Request, res: Response, next: NextFunction) {
+  console.log('--- Contact form handler reached ---'); // Tracer log
   try {
     const validatedData = contactSchema.parse(req.body);
     const submission = await contactService.createContactSubmission(validatedData);
