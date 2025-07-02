@@ -154,4 +154,42 @@ export async function sendContentChangeNotification(payload: any): Promise<void>
     } catch (error) {
         console.error(`CRITICAL: Failed to send Sanity webhook notification email.`, error);
     }
-} 
+}
+
+/**
+ * Sends a critical alert to the admin when a contact form submission
+ * fails to save to the database.
+ */
+export async function sendDbFailureNotification(formData: ContactFormData, error: Error): Promise<void> {
+    try {
+        const fromAddress = fromNoReplyEmail; // Use a system address
+        const subject = `[CRITICAL ALERT] Failed to Save Contact Form Submission`;
+
+        const html = `
+            <h1>Database Write Failure</h1>
+            <p>A user tried to submit the contact form, but it failed to save to the Supabase database.</p>
+            <p><strong>You must follow up with this person manually.</strong></p>
+            <h2>Submission Details:</h2>
+            <ul>
+                <li><strong>Name:</strong> ${formData.full_name}</li>
+                <li><strong>Email:</strong> ${formData.email}</li>
+                ${formData.phone_number ? `<li><strong>Phone:</strong> ${formData.phone_number}</li>` : ''}
+                ${formData.company ? `<li><strong>Company:</strong> ${formData.company}</li>` : ''}
+                ${formData.role_description ? `<li><strong>Role:</strong> ${formData.role_description}</li>` : ''}
+                ${formData.service_needs ? `<li><strong>Service Needs:</strong><br/>${formData.service_needs}</li>` : ''}
+            </ul>
+            <h2>Error Details:</h2>
+            <pre><code>${JSON.stringify({ name: error.name, message: error.message, stack: error.stack }, null, 2)}</code></pre>
+        `;
+
+        await resend.emails.send({
+            from: fromAddress,
+            to: websiteOwnerEmail,
+            subject: subject,
+            html: html,
+        });
+
+    } catch (emailError) {
+        console.error("ULTRA-CRITICAL: Database failed AND the alert email failed to send.", emailError);
+    }
+}
