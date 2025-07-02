@@ -27,9 +27,11 @@ export async function createContactSubmission(submission: ContactFormData) {
     // Send a special notification to the admin with the form data.
     await sendDbFailureNotification(submission, dbError as Error);
 
-    // IMPORTANT: Re-throw the error so the controller knows the operation failed
-    // and can send an appropriate error response to the user.
-    throw dbError;
+    // IMPORTANT: As per the request, we are NOT re-throwing the error.
+    // The controller will proceed as if the submission was successful.
+    // The only record of this submission is now the admin alert email.
+    // We return a placeholder object that mimics a successful save.
+    savedData = { ...submission, id: 'recovered-by-email', created_at: new Date().toISOString() };
   }
 
   return savedData;
