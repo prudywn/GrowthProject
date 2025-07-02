@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Get the backend URL from environment variables
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL?.split('||').map(s => s.trim())[0] || 'http://localhost:3001';
+const rawBackendUrl = process.env.NEXT_PUBLIC_BACKEND_URL?.split('||').map(s => s.trim())[0] || 'http://localhost:3001';
+const BACKEND_URL = rawBackendUrl.replace(/\/$/, ""); // Remove trailing slash if it exists
 
 export async function POST(request: NextRequest) {
   try {
