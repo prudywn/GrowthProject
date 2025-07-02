@@ -1,23 +1,36 @@
 import { supabase } from '../lib/supabaseClient';
-import { sendContactEmails, ContactFormData } from './email.service';
+import { sendContactEmails, sendDbFailureNotification, ContactFormData } from './email.service';
 
 export async function createContactSubmission(submission: ContactFormData) {
-  // Step 1: Save the submission to the database. This is the critical action.
-  const { data, error } = await supabase
-    .from('contact_submissions')
-    .insert([submission])
-    .select()
-    .single(); // Using .single() to ensure we get one object back, not an array
-  
-  if (error) {
-    // If the database write fails, we must stop and report the error.
-    throw error;
+  let savedData;
+  try {
+    // Step 1: Try to save the submission to the database.
+    const { data, error } = await supabase
+      .from('contact_submissions')
+      .insert([submission])
+      .select()
+      .single();
+    
+    if (error) {
+      // If Supabase returns an error object, throw it to be caught by the catch block.
+      throw error;
+    }
+    savedData = data;
+
+    // Step 2: If save is successful, trigger the standard confirmation emails.
+    await sendContactEmails(submission);
+
+  } catch (dbError) {
+    // Step 3: If the database write fails, log it and send a critical alert to the admin.
+    console.error("CRITICAL: Supabase database write failed. An alert email will be sent to the admin.", dbError);
+    
+    // Send a special notification to the admin with the form data.
+    await sendDbFailureNotification(submission, dbError as Error);
+
+    // IMPORTANT: Re-throw the error so the controller knows the operation failed
+    // and can send an appropriate error response to the user.
+    throw dbError;
   }
 
-  // Step 2: After successfully saving, trigger the emails.
-  // This is a "fire and forget" action from the perspective of the user's request.
-  // The email service has its own internal error handling so it won't crash this process.
-  await sendContactEmails(submission);
-
-  return data;
-} 
+  return savedData;
+}

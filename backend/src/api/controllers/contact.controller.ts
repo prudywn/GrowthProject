@@ -12,7 +12,18 @@ const contactSchema = z.object({
 });
 
 export async function handleContactForm(req: Request, res: Response, next: NextFunction) {
-  console.log('--- Contact form handler reached ---'); // Tracer log
+  console.log('--- Contact form handler reached ---');
+
+  // --- Network Connectivity Test ---
+  try {
+    console.log('--- Testing network connectivity to google.com ---');
+    const testResponse = await fetch('https://www.google.com');
+    console.log('--- Google.com responded with status:', testResponse.status, '---');
+  } catch (networkError) {
+    console.error('--- CRITICAL: Network connectivity test failed! ---', networkError);
+  }
+  // --- End of Network Connectivity Test ---
+
   try {
     const validatedData = contactSchema.parse(req.body);
     const submission = await contactService.createContactSubmission(validatedData);
