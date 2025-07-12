@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { sanityFetch, urlForImage } from "@/lib/sanity/client";
+import { sanityFetch } from "@/lib/sanity/client";
+import { getCachedImageUrl } from "@/lib/sanity/imageCache";
 import { SanityService } from "@/types";
 
 const servicesQuery = `*[_type == "service"] | order(_createdAt desc) {
@@ -31,7 +32,9 @@ export default async function ServicesPage() {
         {services?.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service) => {
-              const imageUrl = service.mainImage ? urlForImage(service.mainImage)?.url() : null;
+              const imageUrl = service.mainImage
+                ? getCachedImageUrl(service.mainImage, "medium")
+                : null;
               return (
                 <Link
                   key={service._id}
@@ -64,7 +67,12 @@ export default async function ServicesPage() {
                         viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
                       </svg>
                     </span>
                   </div>
@@ -74,7 +82,9 @@ export default async function ServicesPage() {
           </div>
         ) : (
           <div className="text-center py-16">
-            <p className="text-lg text-gray-500">No services found. Please check back later.</p>
+            <p className="text-lg text-gray-500">
+              No services found. Please check back later.
+            </p>
           </div>
         )}
       </div>

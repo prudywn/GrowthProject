@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
-import Image from "next/image";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { urlForImage } from "@/lib/sanity/client";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { getCachedImageUrl } from "@/lib/sanity/imageCache";
 import { SanityService } from "@/types";
+import { Card } from "@/components/custom/card";
 
 export interface ServicesSectionProps {
   title: string;
@@ -13,144 +14,177 @@ export interface ServicesSectionProps {
   featuredServices: SanityService[];
 }
 
-export default function ServicesSection({ title, description, featuredServices }: ServicesSectionProps) {
+export default function ServicesSection({
+  title,
+  description,
+  featuredServices,
+}: ServicesSectionProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [scrollIndex, setScrollIndex] = useState(0);
 
-  const handleScroll = () => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
-    }
+  const scroll = (dir: "left" | "right") => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const cardWidth = container.offsetWidth / 3; // Show 3 cards at a time
+    container.scrollBy({
+      left: dir === "left" ? -cardWidth : cardWidth,
+      behavior: "smooth",
+    });
+
+    setScrollIndex((prev) =>
+      dir === "left"
+        ? Math.max(prev - 1, 0)
+        : Math.min(prev + 1, Math.max(0, featuredServices.length - 3))
+    );
   };
-
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const scrollAmount = scrollRef.current.clientWidth * 0.8;
-      scrollRef.current.scrollBy({ 
-        left: direction === 'left' ? -scrollAmount : scrollAmount, 
-        behavior: 'smooth' 
-      });
-    }
-  };
-
-  useEffect(() => {
-    const currentRef = scrollRef.current;
-    if (currentRef) {
-      handleScroll(); // Initial check
-      currentRef.addEventListener('scroll', handleScroll);
-    }
-    return () => {
-      if (currentRef) {
-        currentRef.removeEventListener('scroll', handleScroll);
-      }
-    };
-  }, [featuredServices]);
 
   if (!featuredServices?.length) {
     return null;
   }
 
-  const showCarousel = featuredServices.length > 3;
-
   return (
-    <section className="py-20 bg-primary/5">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4 text-primary">{title}</h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            {description}
-          </p>
+    <section className="py-16 px-4 max-w-7xl mx-auto text-center space-y-12 bg-[#E1F2FE]">
+      <div className="text-start ml-4">
+        <h2 className="md:text-5xl text-3xl font-bold text-[#195872]">
+          {title}
+        </h2>
+        <p className="mt-4 text-[#4D4D4D]">{description}</p>
+
+        {/* See More Services button in small screens */}
+        <div className="flex justify-end mt-4 md:hidden">
+          <Link href="/services">
+            <button className="rounded-full cursor-pointer w-[200px] bg-[#195872] p-2 text-white text-sm">
+              See More Services {"->"}
+            </button>
+          </Link>
+        </div>
+      </div>
+
+      {/* Cards Section */}
+      <div className="relative">
+        {/* Desktop Grid - Show only 3 cards */}
+        <div className="hidden lg:grid grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {featuredServices.slice(0, 3).map((service, index) => {
+            const imageUrl = service.mainImage
+              ? getCachedImageUrl(service.mainImage, "medium")
+              : null;
+
+            return (
+              <motion.div
+                key={service._id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.15 }}
+                viewport={{ once: true, amount: 0.3 }}
+              >
+                <Link href={`/services/${service.slug.current}`}>
+                  <Card
+                    title={service.title}
+                    description={service.shortDescription}
+                    imageSrc={imageUrl || ""}
+                  />
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
 
-        <div className="relative">
-          {showCarousel && (
-            <>
-              <button 
-                onClick={() => scroll('left')}
-                disabled={!canScrollLeft}
-                className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/80 shadow-md hover:bg-white transition-all disabled:opacity-0 disabled:cursor-not-allowed`}
-              >
-                <ChevronLeft className="text-primary" />
-              </button>
-              <button 
-                onClick={() => scroll('right')}
-                disabled={!canScrollRight}
-                className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/80 shadow-md hover:bg-white transition-all disabled:opacity-0 disabled:cursor-not-allowed`}
-              >
-                <ChevronRight className="text-primary" />
-              </button>
-            </>
-          )}
+        {/* Mobile stacked layout (below md) */}
+        <div className="flex flex-col gap-6 lg:hidden md:hidden">
+          {featuredServices.slice(0, 3).map((service, index) => {
+            const imageUrl = service.mainImage
+              ? getCachedImageUrl(service.mainImage, "medium")
+              : null;
 
-          <div 
-            ref={scrollRef} 
-            className={`flex gap-8 ${showCarousel ? 'overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory' : 'grid md:grid-cols-2 lg:grid-cols-3'}`}
+            return (
+              <motion.div
+                key={service._id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.15 }}
+                viewport={{ once: true, amount: 0.3 }}
+              >
+                <Link href={`/services/${service.slug.current}`}>
+                  <Card
+                    title={service.title}
+                    description={service.shortDescription}
+                    imageSrc={imageUrl || ""}
+                  />
+                </Link>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Carousel for md screens only - Show 3 cards with scroll */}
+        <div className="hidden md:flex lg:hidden items-center">
+          <button
+            onClick={() => scroll("left")}
+            className="p-2 disabled:opacity-50"
+            disabled={scrollIndex === 0}
+          >
+            <ChevronLeft />
+          </button>
+          <div
+            ref={scrollRef}
+            className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory w-full px-2"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {featuredServices.map((service) => {
-              const imageUrl = service.mainImage ? urlForImage(service.mainImage)?.url() : null;
+              const imageUrl = service.mainImage
+                ? getCachedImageUrl(service.mainImage, "medium")
+                : null;
 
               return (
-                <div 
-                  key={service._id} 
-                  className={`${showCarousel ? 'snap-start flex-shrink-0 w-[calc(100%-2rem)] md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)]' : ''}`}
-                >
-                  <div
-                    className="group bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col"
-                  >
-                    <div className="relative h-48 w-full overflow-hidden">
-                      {imageUrl && (
-                        <Image
-                          src={imageUrl}
-                          alt={service.title}
-                          fill
-                          className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                      )}
-                    </div>
-                    <div className="p-6 flex-1 flex flex-col">
-                      <h3 className="text-xl font-semibold mb-2 text-gray-800 group-hover:text-primary transition-colors">
-                        {service.title}
-                      </h3>
-                      <p className="text-gray-600 mb-4 flex-1">
-                        {service.shortDescription}
-                      </p>
-                      <Link
-                        href={`/services/${service.slug.current}`}
-                        className="text-primary font-medium inline-flex items-center mt-auto"
-                      >
-                        Learn more
-                        <svg
-                          className="w-4 h-4 ml-1 transition-transform duration-300 group-hover:translate-x-1"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 5l7 7-7 7"
-                          />
-                        </svg>
-                      </Link>
-                    </div>
-                  </div>
+                <div key={service._id} className="flex-shrink-0 w-1/3">
+                  <Link href={`/services/${service.slug.current}`}>
+                    <Card
+                      title={service.title}
+                      description={service.shortDescription}
+                      imageSrc={imageUrl || ""}
+                    />
+                  </Link>
                 </div>
               );
             })}
           </div>
+          <button
+            onClick={() => scroll("right")}
+            className="p-2 disabled:opacity-50"
+            disabled={scrollIndex >= Math.max(0, featuredServices.length - 3)}
+          >
+            <ChevronRight />
+          </button>
         </div>
 
-        <div className="text-center mt-12">
-          <Link
-            href="/services"
-            className="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-white bg-primary hover:bg-primary/90 transition-colors shadow-lg hover:shadow-xl"
-          >
-            View All Services
+        {/* Pagination dots (only for md) */}
+        <div className="hidden md:flex lg:hidden justify-center gap-2 pt-4">
+          {Array.from({
+            length: Math.max(1, Math.ceil(featuredServices.length / 3)),
+          }).map((_, i) => (
+            <div
+              key={i}
+              className={`w-2 h-2 rounded-full ${
+                i === scrollIndex ? "bg-slate-600" : "bg-slate-300"
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom Row */}
+      <div className="flex justify-between md:flex-row flex-col space-y-2 mt-12 mx-6">
+        <p className="max-w-[550px] text-[#4D4D4D] text-lg text-start">
+          We offer comprehensive solutions tailored to your business needs and
+          growth objectives.
+        </p>
+
+        {/* Desktop "See More Services" Button */}
+        <div className="hidden md:block">
+          <Link href="/services">
+            <button className="rounded-full cursor-pointer w-[230px] bg-[#195872] p-2 text-white">
+              See More Services {"->"}
+            </button>
           </Link>
         </div>
       </div>
