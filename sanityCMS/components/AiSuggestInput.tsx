@@ -63,6 +63,27 @@ export function AiSuggestInput(props: StringInputProps) {
     };
   }, [value, charLimit]);
 
+  // --- Word Counter Logic ---
+  // Try to extract max word count from validation rules
+  const maxWords = useMemo(() => {
+    if (schemaType?.validation) {
+      // Try to find a .max() call in the validation chain
+      // Sanity's validation is a function: Rule => Rule.required().min(30).max(200)
+      // We can try to parse the function as a string
+      const fnStr = schemaType.validation.toString();
+      const match = fnStr.match(/max\((\d+)\)/);
+      if (match) {
+        return parseInt(match[1], 10);
+      }
+    }
+    return 200; // fallback default
+  }, [schemaType]);
+
+  const wordCount = typeof value === 'string' ? value.trim().split(/\s+/).filter(Boolean).length : 0;
+  const wordsRemaining = maxWords - wordCount;
+  const overLimit = wordCount > maxWords;
+  // --- End Word Counter Logic ---
+
   const handleGenerate = async () => {
     setIsLoading(true);
     setError(null);
@@ -161,6 +182,7 @@ export function AiSuggestInput(props: StringInputProps) {
         </div>
       </div>
 
+
       {/* Character Counter */}
       {characterStats && (
         <Box paddingTop={1}>
@@ -177,6 +199,16 @@ export function AiSuggestInput(props: StringInputProps) {
           </Text>
         </Box>
       )}
+
+      {/* Word Counter */}
+      <div style={{ textAlign: 'right', marginTop: '-0.5rem' }}>
+        <Text size={1} style={{ color: overLimit ? 'red' : '#888' }}>
+          {overLimit
+            ? `${Math.abs(wordsRemaining)} word${Math.abs(wordsRemaining) !== 1 ? 's' : ''} over the limit (${maxWords})`
+            : `${wordsRemaining} word${Math.abs(wordsRemaining) !== 1 ? 's' : ''} remaining`}
+        </Text>
+      </div>
+
 
       {error && (
         <Card padding={2} tone="critical">

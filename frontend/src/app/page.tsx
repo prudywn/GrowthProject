@@ -4,7 +4,9 @@ import ReadyToTransform from "@/app/components/Consultation";
 import Courses from "@/app/components/Courses";
 import HeroSection from "@/app/components/Hero";
 import WhyGrowthPartners from "@/app/components/Why";
-import ServicesSection, { ServicesSectionProps } from "@/components/ServicesSection";
+import ServicesSection, {
+  ServicesSectionProps,
+} from "@/components/ServicesSection";
 import { sanityFetch } from "@/lib/sanity/client";
 
 interface HomepageContent {

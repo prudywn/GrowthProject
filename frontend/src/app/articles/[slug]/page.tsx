@@ -6,7 +6,11 @@ import { PortableText } from "@portabletext/react";
 import { Clock } from "lucide-react";
 import RelatedArticles from "@/app/components/RelatedArticles";
 
-export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ArticlePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const resolvedParams = await params;
   if (!resolvedParams?.slug) return notFound();
 
@@ -51,6 +55,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           alt={article.title}
           fill
           className="object-cover"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          priority
         />
       </div>
 
