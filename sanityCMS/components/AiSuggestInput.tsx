@@ -1,6 +1,6 @@
-import { Stack, Button, Card, Spinner, Text, Tooltip } from '@sanity/ui';
+import { Stack, Button, Card, Spinner, Text, Tooltip, Box } from '@sanity/ui';
 import { set, unset, useFormValue, StringInputProps } from 'sanity';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { FiMic, FiRefreshCw } from 'react-icons/fi';
 
 // The backend URL where our AI endpoint is hosted
@@ -19,6 +19,19 @@ const getFieldType = (schemaType: any): string => {
   return 'string';
 };
 
+// Get character limit from validation rules
+const getCharacterLimit = (schemaType: any): number | null => {
+  if (schemaType.validation) {
+    const validationRules = schemaType.validation(null);
+    for (const rule of validationRules._rules || []) {
+      if (rule.flag === 'max') {
+        return rule.constraint;
+      }
+    }
+  }
+  return null;
+};
+
 export function AiSuggestInput(props: StringInputProps) {
   const { schemaType, value = '', onChange } = props;
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +39,29 @@ export function AiSuggestInput(props: StringInputProps) {
   const document = useFormValue([]) as Record<string, any>;
   const fieldType = getFieldType(schemaType);
   const hasContent = typeof value === 'string' && value.trim().length > 0;
+  const charLimit = getCharacterLimit(schemaType);
+  
+  // Calculate character count and status
+  const characterStats = useMemo(() => {
+    const currentLength = typeof value === 'string' ? value.length : 0;
+    if (!charLimit) return null;
+    
+    const percentage = (currentLength / charLimit) * 100;
+    let status: 'success' | 'warning' | 'critical' = 'success';
+    
+    if (percentage >= 90) {
+      status = 'critical';
+    } else if (percentage >= 75) {
+      status = 'warning';
+    }
+    
+    return {
+      current: currentLength,
+      max: charLimit,
+      percentage,
+      status
+    };
+  }, [value, charLimit]);
 
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -124,6 +160,23 @@ export function AiSuggestInput(props: StringInputProps) {
           </Tooltip>
         </div>
       </div>
+
+      {/* Character Counter */}
+      {characterStats && (
+        <Box paddingTop={1}>
+          <Text 
+            size={1} 
+            tone={characterStats.status}
+            style={{ 
+              float: 'right',
+              fontWeight: characterStats.status === 'critical' ? 'bold' : 'normal'
+            }}
+          >
+            {characterStats.current}/{characterStats.max} characters
+            {characterStats.status === 'critical' && ' (limit exceeded)'}
+          </Text>
+        </Box>
+      )}
 
       {error && (
         <Card padding={2} tone="critical">
