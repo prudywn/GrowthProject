@@ -25,7 +25,7 @@ export const getAllPostsQuery = `
 export const getAllCoursesQuery = `
 *[_type == "course"]{
     _id,
-    title,
+    name,
     description,
     "imageSrc": image.asset->url
   }
@@ -189,6 +189,7 @@ export const getMainCoursesQuery = `
     _id,
     name,
     description,
+    accomplishments,
     "imageSrc": image.asset->url
   }
 `;
