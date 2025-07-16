@@ -189,14 +189,14 @@ export default function ContactForm() {
             discover how we can help your business achieve better results.
           </p>
           <p className="text-[#195872] mt-4 font-medium flex gap-2">
-            <Phone /> 254-789-149-415
+            <Phone /> 254-721-303-864
           </p>
         </div>
 
         <div className="text-[#195872] p-8 rounded-[40px] shadow-md space-y-6">
           <h3 className="text-xl font-semibold">Contact Info</h3>
           <p className="text-base flex gap-2">
-            <Phone /> 254-789-149-415
+            <Phone /> 254-721-303-864
           </p>
           <p className="text-base flex gap-2">
             <Mail /> info@growthpartners.co.ke
