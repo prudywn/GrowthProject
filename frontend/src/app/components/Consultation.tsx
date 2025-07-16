@@ -2,6 +2,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Phone } from "lucide-react";
 
 export default function ReadyToTransform() {
@@ -21,12 +22,18 @@ export default function ReadyToTransform() {
       </p>
 
       <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-10">
-        <button className="bg-[#195872] text-white px-6 py-3 rounded-full font-medium flex items-center gap-2">
+        <Link 
+          href="/contact-us" 
+          className="bg-[#195872] text-white px-6 py-3 rounded-full font-medium flex items-center gap-2 hover:opacity-90 transition"
+        >
           <Phone /> Get Free Consultation
-        </button>
-        <button className="border border-[#195872] text-[#195872] px-6 py-3 rounded-full font-medium flex items-center gap-2 bg-white">
+        </Link>
+        <Link 
+          href="/courses" 
+          className="border border-[#195872] text-[#195872] px-6 py-3 rounded-full font-medium flex items-center gap-2 bg-white hover:bg-[#195872] hover:text-white transition"
+        >
           View Our Programs →
-        </button>
+        </Link>
       </div>
       <hr className="text-black w-3/4 mx-auto" />
       <div className="flex flex-col md:flex-row justify-center gap-18 mt-4 text-[#195872] font-bold">

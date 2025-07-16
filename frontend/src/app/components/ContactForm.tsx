@@ -1,6 +1,7 @@
 "use client";
 import { Mail, MapPin, Phone } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -14,6 +15,9 @@ export default function ContactForm() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -21,11 +25,32 @@ export default function ContactForm() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleRecaptchaChange = (token: string | null) => {
+    setRecaptchaToken(token);
+  };
+
+  const handleRecaptchaLoad = () => {
+    setRecaptchaLoaded(true);
+  };
+
+  const handleRecaptchaError = () => {
+    setRecaptchaToken(null);
+    setError("reCAPTCHA failed to load. Please refresh the page and try again.");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setSuccess("");
     setError("");
+    
+    // Check if reCAPTCHA is completed
+    if (!recaptchaToken) {
+      setError("Please complete the reCAPTCHA verification.");
+      setLoading(false);
+      return;
+    }
+    
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -37,6 +62,7 @@ export default function ContactForm() {
           company: formData.company,
           role_description: formData.roleInfo,
           service_needs: formData.serviceInfo,
+          recaptcha_token: recaptchaToken,
         }),
       });
       if (!res.ok) {
@@ -52,8 +78,13 @@ export default function ContactForm() {
         roleInfo: "",
         serviceInfo: "",
       });
+      setRecaptchaToken(null);
+      recaptchaRef.current?.reset();
     } catch (err: any) {
       setError(err.message || "Failed to send message.");
+      // Reset reCAPTCHA on error
+      recaptchaRef.current?.reset();
+      setRecaptchaToken(null);
     } finally {
       setLoading(false);
     }
@@ -169,10 +200,54 @@ export default function ContactForm() {
           />
         </div>
 
+        {/* reCAPTCHA */}
+        <div className="flex flex-col items-center space-y-3">
+          <div className="text-center">
+            <label className="font-bold text-[#195872] text-lg mb-2 block">
+              Security Verification
+            </label>
+            <p className="text-sm text-gray-600 mb-4">
+              Please verify that you are human by completing the reCAPTCHA below:
+            </p>
+          </div>
+          
+          <div className="flex justify-center">
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+              onChange={handleRecaptchaChange}
+              onExpired={() => setRecaptchaToken(null)}
+              onError={handleRecaptchaError}
+              onLoad={handleRecaptchaLoad}
+              theme="light"
+              size="normal"
+            />
+          </div>
+          
+          {/* reCAPTCHA Status */}
+          {!recaptchaLoaded && (
+            <div className="text-center text-sm text-gray-500">
+              Loading reCAPTCHA...
+            </div>
+          )}
+          
+          {recaptchaLoaded && !recaptchaToken && (
+            <div className="text-center text-sm text-orange-600">
+              ⚠️ Please complete the reCAPTCHA verification above to enable form submission
+            </div>
+          )}
+          
+          {recaptchaToken && (
+            <div className="text-center text-sm text-green-600">
+              ✅ reCAPTCHA verified successfully - You can now submit the form
+            </div>
+          )}
+        </div>
+
         <button
           type="submit"
           className="bg-[#195872] text-white rounded-full px-6 py-3 w-full hover:bg-[#144452] transition text-lg"
-          disabled={loading}
+          disabled={loading || !recaptchaToken}
         >
           {loading ? "Sending..." : "Send Message"}
         </button>
