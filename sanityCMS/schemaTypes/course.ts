@@ -66,7 +66,7 @@ export default defineType({
       type: 'array',
       of: [{
         type: 'string',
-        components: {input: CharacterCountInput}
+        components: {input: AiSuggestInput}
       }],
       description: 'What will students learn in this course?',
       validation: Rule => Rule.min(3).max(10)

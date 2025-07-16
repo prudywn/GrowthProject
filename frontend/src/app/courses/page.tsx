@@ -56,7 +56,7 @@ export default function CoursesPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
-            <Card {...course} />
+            <Card title={course.name} description={course.description} imageSrc={course.imageSrc} />
           </motion.div>
         ))}
       </div>
@@ -71,7 +71,7 @@ export default function CoursesPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
-            <Card {...course} />
+            <Card title={course.name} description={course.description} imageSrc={course.imageSrc} />
           </motion.div>
         ))}
       </div>
