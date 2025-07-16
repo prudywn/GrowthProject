@@ -6,6 +6,8 @@ import { FiMic, FiRefreshCw } from 'react-icons/fi';
 const API_ENDPOINT = process.env.SANITY_STUDIO_BACKEND_API_ENDPOINT || 'http://localhost:3001/api/v1/ai/suggest';
 
 const getFieldType = (schemaType: any): string => {
+  if (!schemaType || !schemaType.name) return 'string';
+  
   if (schemaType.name === 'text') return 'text';
   if (schemaType.name === 'string') {
     if (schemaType.options?.list?.length) return 'select';
@@ -18,12 +20,15 @@ const getFieldType = (schemaType: any): string => {
 };
 
 const getCharacterLimit = (schemaType: any): number | null => {
-  if (schemaType.validation) {
-    const validationRules = schemaType.validation(null);
-    for (const rule of validationRules._rules || []) {
-      if (rule.flag === 'max') {
-        return rule.constraint;
+  if (schemaType?.validation) {
+    try {
+      const fnStr = schemaType.validation.toString();
+      const match = fnStr.match(/max\((\d+)\)/);
+      if (match) {
+        return parseInt(match[1], 10);
       }
+    } catch (error) {
+      console.warn('Failed to parse validation rules:', error);
     }
   }
   return null;
@@ -36,7 +41,7 @@ export function AiSuggestInput(props: StringInputProps) {
   const document = useFormValue([]) as Record<string, any>;
   const fieldType = getFieldType(schemaType);
   const hasContent = typeof value === 'string' && value.trim().length > 0;
-  const charLimit = getCharacterLimit(schemaType);
+  const charLimit = schemaType ? getCharacterLimit(schemaType) : null;
 
   const characterStats = useMemo(() => {
     const currentLength = typeof value === 'string' ? value.length : 0;
@@ -61,10 +66,14 @@ export function AiSuggestInput(props: StringInputProps) {
 
   const maxChars = useMemo(() => {
     if (schemaType?.validation) {
-      const fnStr = schemaType.validation.toString();
-      const match = fnStr.match(/max\((\d+)\)/);
-      if (match) {
-        return parseInt(match[1], 10);
+      try {
+        const fnStr = schemaType.validation.toString();
+        const match = fnStr.match(/max\((\d+)\)/);
+        if (match) {
+          return parseInt(match[1], 10);
+        }
+      } catch (error) {
+        console.warn('Failed to parse validation rules for maxChars:', error);
       }
     }
     return 200;
