@@ -2,6 +2,7 @@
 
 import { useRef, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { fetchHomepageContent } from "@/lib/fetcher";
@@ -86,12 +87,18 @@ export default function HeroSection() {
             {content.heroDescription}
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <button className="bg-[#195872] text-white px-6 py-3 rounded-full font-medium hover:opacity-90 transition cursor-pointer">
+            <Link 
+              href="/contact-us" 
+              className="bg-[#195872] text-white px-6 py-3 rounded-full font-medium hover:opacity-90 transition cursor-pointer text-center"
+            >
               Start Your Transformation
-            </button>
-            <button className="border border-[#195872] text-[#195872] px-6 py-3 rounded-full font-medium bg-white cursor-pointer">
+            </Link>
+            <Link 
+              href="/services" 
+              className="border border-[#195872] text-[#195872] px-6 py-3 rounded-full font-medium bg-white cursor-pointer text-center hover:bg-[#195872] hover:text-white transition"
+            >
               Learn More
-            </button>
+            </Link>
           </div>
         </div>
 
