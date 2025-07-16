@@ -56,24 +56,13 @@ function generateUserConfirmationHtml(name: string): string {
 }
 
 /**
- * Sends both the admin notification and user confirmation emails.
- * It's designed to not throw an error if email sending fails, as the primary
- * action (saving the form to the DB) has already succeeded.
+ * Sends a confirmation email to the user who submitted the contact form.
+ * It's designed to not throw an error if email sending fails.
  */
-export async function sendContactEmails(formData: ContactFormData): Promise<void> {
+export async function sendUserConfirmation(formData: ContactFormData): Promise<void> {
     try {
-        // IMPORTANT: The 'from' email address MUST be from a domain you have verified in your Resend account.
         const fromAddress = fromEmail;
-
-        // Email to the website owner
-        await resend.emails.send({
-            from: fromAddress,
-            to: websiteOwnerEmail,
-            subject: `New Contact Form Submission from ${formData.full_name}`,
-            html: generateAdminEmailHtml(formData)
-        });
-
-        // Confirmation email to the user
+        
         await resend.emails.send({
             from: fromAddress,
             to: formData.email,
@@ -82,11 +71,39 @@ export async function sendContactEmails(formData: ContactFormData): Promise<void
         });
 
     } catch (error) {
-        // This is a critical design choice: we log the email failure but do not re-throw the error.
-        // This ensures that even if emails fail to send, the user still gets a "Success"
-        // response because their contact submission WAS successfully saved to the database.
-        console.error("CRITICAL: Contact form saved to DB, but failed to send one or more emails.", error);
+        console.error("CRITICAL: Failed to send user confirmation email.", error);
     }
+}
+
+/**
+ * Sends an admin notification email when contact form is successfully saved to database.
+ * It's designed to not throw an error if email sending fails.
+ */
+export async function sendAdminContactNotification(formData: ContactFormData): Promise<void> {
+    try {
+        const fromAddress = fromEmail;
+        
+        await resend.emails.send({
+            from: fromAddress,
+            to: websiteOwnerEmail,
+            subject: `New Contact Form Submission from ${formData.full_name}`,
+            html: generateAdminEmailHtml(formData)
+        });
+
+    } catch (error) {
+        console.error("CRITICAL: Failed to send admin contact notification email.", error);
+    }
+}
+
+/**
+ * Sends both the admin notification and user confirmation emails.
+ * It's designed to not throw an error if email sending fails, as the primary
+ * action (saving the form to the DB) has already succeeded.
+ */
+export async function sendContactEmails(formData: ContactFormData): Promise<void> {
+    // Use the new separate functions for better modularity
+    await sendAdminContactNotification(formData);
+    await sendUserConfirmation(formData);
 }
 
 function generateCrudNotificationHtml(action: string, resource: string, data: any): string {

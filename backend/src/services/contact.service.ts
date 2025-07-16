@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabaseClient';
-import { sendContactEmails, sendDbFailureNotification, ContactFormData } from './email.service';
+import { sendContactEmails, sendUserConfirmation, sendDbFailureNotification, ContactFormData } from './email.service';
 
 export async function createContactSubmission(submission: ContactFormData) {
   let savedData;
@@ -26,6 +26,10 @@ export async function createContactSubmission(submission: ContactFormData) {
     
     // Send a special notification to the admin with the form data.
     await sendDbFailureNotification(submission, dbError as Error);
+
+    // IMPORTANT: Always send user confirmation email even when database fails
+    // This ensures the user receives confirmation despite database issues
+    await sendUserConfirmation(submission);
 
     // IMPORTANT: As per the request, we are NOT re-throwing the error.
     // The controller will proceed as if the submission was successful.
