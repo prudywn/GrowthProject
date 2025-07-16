@@ -1,11 +1,18 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
-#
-# * 
+# *
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /_next
+Disallow: /_error
+Disallow: /404
+Disallow: /500
+Disallow: /*.json$
+Disallow: /*?*
 
-# Disallow crawling of the Sanity Studio
-Disallow: /studio/
+# Host
+Host: hhttp://growthpartners.co.ke/
 
-# Point to the sitemap
-Sitemap: https://growthpartners.co.ke/sitemap.xml
+# Sitemaps
+Sitemap: hhttp://growthpartners.co.ke/sitemap.xml
+Sitemap: http://growthpartners.co.ke//sitemap.xml
