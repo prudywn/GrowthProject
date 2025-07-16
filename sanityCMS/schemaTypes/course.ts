@@ -66,10 +66,23 @@ export default defineType({
       type: 'array',
       of: [{
         type: 'string',
-        components: {input: AiSuggestInput}
+        components: {input: CharacterCountInput}
       }],
       description: 'What will students learn in this course?',
       validation: Rule => Rule.min(3).max(10)
+    }),
+    defineField({
+      name: 'accomplishments',
+      title: 'What This Course Helps Accomplish',
+      type: 'array',
+      of: [{
+        type: 'string',
+        components: {input: AiSuggestInput},
+        validation: Rule => Rule.required().min(10).max(150)
+      }],
+      description: 'List the key accomplishments or outcomes students will achieve from this course',
+      validation: Rule => Rule.min(3).max(8),
+      hidden: ({document}) => document?.category !== 'main',
     }),
     defineField({
       name: 'lessons',

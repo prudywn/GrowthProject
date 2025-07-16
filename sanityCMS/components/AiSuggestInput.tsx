@@ -1,12 +1,10 @@
-import { Stack, Button, Card, Spinner, Text, Tooltip } from '@sanity/ui';
+import { Stack, Button, Card, Spinner, Text, Tooltip, Box } from '@sanity/ui';
 import { set, unset, useFormValue, StringInputProps } from 'sanity';
 import { useState, useMemo } from 'react';
 import { FiMic, FiRefreshCw } from 'react-icons/fi';
 
-// The backend URL where our AI endpoint is hosted
 const API_ENDPOINT = process.env.SANITY_STUDIO_BACKEND_API_ENDPOINT || 'http://localhost:3001/api/v1/ai/suggest';
 
-// Map Sanity schema types to our field types
 const getFieldType = (schemaType: any): string => {
   if (schemaType.name === 'text') return 'text';
   if (schemaType.name === 'string') {
@@ -19,6 +17,18 @@ const getFieldType = (schemaType: any): string => {
   return 'string';
 };
 
+const getCharacterLimit = (schemaType: any): number | null => {
+  if (schemaType.validation) {
+    const validationRules = schemaType.validation(null);
+    for (const rule of validationRules._rules || []) {
+      if (rule.flag === 'max') {
+        return rule.constraint;
+      }
+    }
+  }
+  return null;
+};
+
 export function AiSuggestInput(props: StringInputProps) {
   const { schemaType, value = '', onChange } = props;
   const [isLoading, setIsLoading] = useState(false);
@@ -26,27 +36,43 @@ export function AiSuggestInput(props: StringInputProps) {
   const document = useFormValue([]) as Record<string, any>;
   const fieldType = getFieldType(schemaType);
   const hasContent = typeof value === 'string' && value.trim().length > 0;
+  const charLimit = getCharacterLimit(schemaType);
 
-  // --- Character Counter Logic ---
-  // Try to extract max character count from validation rules
+  const characterStats = useMemo(() => {
+    const currentLength = typeof value === 'string' ? value.length : 0;
+    if (!charLimit) return null;
+
+    const percentage = (currentLength / charLimit) * 100;
+    let status: 'success' | 'warning' | 'critical' = 'success';
+
+    if (percentage >= 90) {
+      status = 'critical';
+    } else if (percentage >= 75) {
+      status = 'warning';
+    }
+
+    return {
+      current: currentLength,
+      max: charLimit,
+      percentage,
+      status,
+    };
+  }, [value, charLimit]);
+
   const maxChars = useMemo(() => {
     if (schemaType?.validation) {
-      // Try to find a .max() call in the validation chain
-      // Sanity's validation is a function: Rule => Rule.required().min(30).max(200)
-      // We can try to parse the function as a string
       const fnStr = schemaType.validation.toString();
       const match = fnStr.match(/max\((\d+)\)/);
       if (match) {
         return parseInt(match[1], 10);
       }
     }
-    return 200; // fallback default
+    return 200;
   }, [schemaType]);
 
   const charCount = typeof value === 'string' ? value.length : 0;
   const charsRemaining = maxChars - charCount;
   const overLimit = charCount > maxChars;
-  // --- End Character Counter Logic ---
 
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -109,7 +135,6 @@ export function AiSuggestInput(props: StringInputProps) {
   return (
     <Stack space={3}>
       <div style={{ position: 'relative' }}>
-        {/* Correct default input rendering */}
         {props.renderDefault(props)}
 
         {/* AI Suggest Button */}
@@ -146,12 +171,29 @@ export function AiSuggestInput(props: StringInputProps) {
         </div>
       </div>
 
-      {/* Character Counter */}
+      {/* Character Counter from deployment */}
+      {characterStats && (
+        <Box paddingTop={1}>
+          <Text
+            size={1}
+            tone={characterStats.status}
+            style={{
+              float: 'right',
+              fontWeight: characterStats.status === 'critical' ? 'bold' : 'normal',
+            }}
+          >
+            {characterStats.current}/{characterStats.max} characters
+            {characterStats.status === 'critical' && ' (limit exceeded)'}
+          </Text>
+        </Box>
+      )}
+
+      {/* Characters remaining or over the limit */}
       <div style={{ textAlign: 'right', marginTop: '-0.5rem' }}>
         <Text size={1} style={{ color: overLimit ? 'red' : '#888' }}>
           {overLimit
             ? `${Math.abs(charsRemaining)} character${Math.abs(charsRemaining) !== 1 ? 's' : ''} over the limit (${maxChars})`
-            : `${charsRemaining} character${Math.abs(charsRemaining) !== 1 ? 's' : ''} remaining`}
+            : `${charsRemaining} character${charsRemaining !== 1 ? 's' : ''} remaining`}
         </Text>
       </div>
 

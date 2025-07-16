@@ -8,7 +8,7 @@ import { fetchAllCourses } from "@/lib/fetcher";
 // Add Course type for all courses
 interface Course {
   _id: string;
-  title: string;
+  name: string;
   description: string;
   imageSrc: string;
 }
