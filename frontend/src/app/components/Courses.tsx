@@ -13,6 +13,7 @@ interface CourseCard {
   _id: string;
   name: string;
   description: string;
+  accomplishments?: string[];
   imageSrc: string;
 }
 
