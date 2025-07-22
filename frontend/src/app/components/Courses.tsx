@@ -7,15 +7,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMainCourses } from "@/lib/fetcher";
-
-// Add CourseCard type
-interface CourseCard {
-  _id: string;
-  name: string;
-  description: string;
-  accomplishments?: string[];
-  imageSrc: string;
-}
+import type { SimpleCourse } from "@/types";
 
 export default function Courses() {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -23,7 +15,7 @@ export default function Courses() {
   const router = useRouter();
 
   // Fetch main courses
-  const { data: cardData = [], isLoading, isError } = useQuery<CourseCard[]>({
+  const { data: cardData = [], isLoading, isError } = useQuery<SimpleCourse[]>({
     queryKey: ["mainCourses"],
     queryFn: fetchMainCourses,
   });
@@ -77,7 +69,10 @@ export default function Courses() {
 
         {/* See More Courses button in small screens */}
         <div className="flex justify-end mt-4 md:hidden">
-          <button className="rounded-full cursor-pointer w-[200px] bg-[#195872] p-2 text-white text-sm">
+          <button 
+            className="rounded-full cursor-pointer w-[200px] bg-[#195872] p-2 text-white text-sm"
+            onClick={handleOnClick}
+          >
             See More Courses {"->"}
           </button>
         </div>
@@ -89,20 +84,25 @@ export default function Courses() {
         <div className="hidden lg:grid grid-cols-3 gap-6">
           {cardData.map((card, index) => (
             <Card
-              key={index}
+              key={card._id}
               title={card.name}
               description={card.description}
               imageSrc={card.imageSrc}
+              slug={card.slug?.current}
+              category={{
+                title: card.category.title,
+                color: card.category.color
+              }}
+              showViewButton={true}
             />
           ))}
         </div>
 
         {/* Mobile stacked layout (below md) */}
-        {/* Mobile stacked layout (below md) */}
         <div className="flex flex-col gap-6 lg:hidden md:hidden">
           {cardData.map((card, index) => (
             <motion.div
-              key={index}
+              key={card._id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.15 }}
@@ -112,6 +112,12 @@ export default function Courses() {
                 title={card.name}
                 description={card.description}
                 imageSrc={card.imageSrc}
+                slug={card.slug?.current}
+                category={{
+                  title: card.category.title,
+                  color: card.category.color
+                }}
+                showViewButton={true}
               />
             </motion.div>
           ))}
@@ -119,8 +125,12 @@ export default function Courses() {
 
         {/* Carousel for md screens only */}
         <div className="hidden md:flex lg:hidden items-center">
-          <button onClick={() => scroll("left")} className="p-2">
-            <ChevronLeft />
+          <button 
+            onClick={() => scroll("left")} 
+            className="p-2 hover:bg-white/20 rounded-full transition-colors"
+            disabled={scrollIndex === 0}
+          >
+            <ChevronLeft className={scrollIndex === 0 ? "text-gray-400" : "text-gray-700"} />
           </button>
           <div
             ref={scrollRef}
@@ -128,15 +138,25 @@ export default function Courses() {
           >
             {cardData.map((card, index) => (
               <Card
-                key={index}
+                key={card._id}
                 title={card.name}
                 description={card.description}
                 imageSrc={card.imageSrc}
+                slug={card.slug?.current}
+                category={{
+                  title: card.category.title,
+                  color: card.category.color
+                }}
+                showViewButton={true}
               />
             ))}
           </div>
-          <button onClick={() => scroll("right")} className="p-2">
-            <ChevronRight />
+          <button 
+            onClick={() => scroll("right")} 
+            className="p-2 hover:bg-white/20 rounded-full transition-colors"
+            disabled={scrollIndex >= cardData.length - 1}
+          >
+            <ChevronRight className={scrollIndex >= cardData.length - 1 ? "text-gray-400" : "text-gray-700"} />
           </button>
         </div>
 
@@ -163,7 +183,7 @@ export default function Courses() {
         {/* Desktop "See More Courses" Button */}
         <div className="hidden md:block">
           <button
-            className="rounded-full cursor-pointer w-[230px] bg-[#195872] p-2 text-white"
+            className="rounded-full cursor-pointer w-[230px] bg-[#195872] p-2 text-white hover:bg-[#2a5d73] transition-colors"
             onClick={handleOnClick}
           >
             See More Courses {"->"}

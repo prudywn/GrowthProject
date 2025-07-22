@@ -8,7 +8,7 @@ export default defineType({
   fields: [
     defineField({
       name: 'name',
-      title: 'Name',
+      title: 'Course Name',
       type: 'string',
       components: {input: AiSuggestInput},
       validation: Rule => Rule.required().min(5).max(120)
@@ -25,14 +25,14 @@ export default defineType({
     }),
     defineField({
       name: 'description',
-      title: 'Description',
+      title: 'Course Description',
       type: 'text',
       components: {input: AiSuggestInput},
       validation: Rule => Rule.required().min(50).max(300)
     }),
     defineField({
       name: 'image',
-      title: 'Image',
+      title: 'Course Image',
       type: 'image',
       options: {
         hotspot: true,
@@ -41,55 +41,18 @@ export default defineType({
     }),
     defineField({
       name: 'category',
-      title: 'Category',
-      type: 'string',
-      options: {
-        list: [
-          {title: 'Main Course', value: 'main'},
-          {title: 'Specialty Course', value: 'specialty'},
-          {title: 'Single Video Course', value: 'video_single'},
-          {title: 'Video Series Course', value: 'video_series'},
-        ],
-        layout: 'radio',
-      },
-      validation: Rule => Rule.required(),
+      title: 'Course Category',
+      type: 'reference',
+      to: {type: 'courseCategory'},
+      validation: Rule => Rule.required()
     }),
     defineField({
-      name: 'videoUrl',
-      title: 'Video URL',
-      type: 'url',
-      hidden: ({document}) => document?.category !== 'video_single',
-    }),
-    defineField({
-      name: 'objectives',
-      title: 'Learning Objectives',
-      type: 'array',
-      of: [{
-        type: 'string',
-        components: {input: AiSuggestInput}
-      }],
-      description: 'What will students learn in this course?',
-      validation: Rule => Rule.min(3).max(10)
-    }),
-    defineField({
-      name: 'accomplishments',
-      title: 'What This Course Helps Accomplish',
-      type: 'array',
-      of: [{
-        type: 'string',
-        components: {input: AiSuggestInput},
-        validation: Rule => Rule.required().min(10).max(150)
-      }],
-      description: 'List the key accomplishments or outcomes students will achieve from this course',
-      validation: Rule => Rule.min(3).max(8),
-      hidden: ({document}) => document?.category !== 'main',
-    }),
-    defineField({
-      name: 'lessons',
-      title: 'Lessons',
-      type: 'array',
-      of: [{type: 'reference', to: {type: 'courseLesson'}}],
-      hidden: ({document}) => document?.category === 'video_single',
+      name: 'content',
+      title: 'Course Content',
+      type: 'blockContent',
+      components: {input: AiSuggestInput},
+      description: 'Rich text content for the course - you can format text, add headings, links, images, and copy/paste from HTML',
+      validation: Rule => Rule.required()
     }),
     defineField({
       name: 'seo',
@@ -118,6 +81,7 @@ export default defineType({
   preview: {
     select: {
       title: 'name',
+      subtitle: 'category.title',
       media: 'image',
     }
   }

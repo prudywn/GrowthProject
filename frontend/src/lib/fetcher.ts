@@ -10,7 +10,9 @@ import {
   getWhyUsContentQuery,
   getAllWhyUsPointsQuery,
   getMainCoursesQuery,
-  getAllCoursesQuery
+  getAllCoursesQuery,
+  getCourseBySlugQuery,
+  getAllCourseCategoriesQuery
 } from "./queries";
 
 export const fetchHomepageContent = async () => {
@@ -59,4 +61,12 @@ export const fetchMainCourses = async () => {
 
 export const fetchAllCourses = async () => {
   return await sanityClient.fetch(getAllCoursesQuery);
+};
+
+export const fetchCourseBySlug = async (slug: string) => {
+  return await sanityClient.fetch(getCourseBySlugQuery, { slug });
+};
+
+export const fetchCourseCategories = async () => {
+  return await sanityClient.fetch(getAllCourseCategoriesQuery);
 };
