@@ -23,11 +23,18 @@ export const getAllPostsQuery = `
 `;
 
 export const getAllCoursesQuery = `
-*[_type == "course"]{
+*[_type == "course" && defined(slug.current)] | order(_createdAt desc) {
     _id,
     name,
+    slug,
     description,
-    "imageSrc": image.asset->url
+    "imageSrc": image.asset->url,
+    category->{
+      _id,
+      title,
+      slug,
+      color
+    }
   }
 `;
 
@@ -185,11 +192,48 @@ export const getAllWhyUsPointsQuery = `
 `;
 
 export const getMainCoursesQuery = `
-  *[_type == "course" && category == "main"]{
+  *[_type == "course" && defined(slug.current)] | order(_createdAt desc) {
     _id,
     name,
+    slug,
     description,
-    accomplishments,
-    "imageSrc": image.asset->url
+    "imageSrc": image.asset->url,
+    category->{
+      _id,
+      title,
+      slug,
+      color
+    }
+  }
+`;
+
+export const getCourseBySlugQuery = `
+  *[_type == "course" && slug.current == $slug][0]{
+    _id,
+    name,
+    slug,
+    description,
+    image {
+      asset-> { url }
+    },
+    content,
+    category->{
+      _id,
+      title,
+      slug,
+      description,
+      color
+    },
+    seo
+  }
+`;
+
+export const getAllCourseCategoriesQuery = `
+  *[_type == "courseCategory"] | order(title asc) {
+    _id,
+    title,
+    slug,
+    description,
+    color
   }
 `;

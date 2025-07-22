@@ -65,6 +65,11 @@ export function AiSuggestInput(props: StringInputProps) {
   }, [value, charLimit]);
 
   const maxChars = useMemo(() => {
+    // Skip character counting for blockContent fields as they should be unlimited
+    if (fieldType === 'blockContent') {
+      return null;
+    }
+    
     if (schemaType?.validation) {
       try {
         const fnStr = schemaType.validation.toString();
@@ -77,11 +82,11 @@ export function AiSuggestInput(props: StringInputProps) {
       }
     }
     return 200;
-  }, [schemaType]);
+  }, [schemaType, fieldType]);
 
   const charCount = typeof value === 'string' ? value.length : 0;
-  const charsRemaining = maxChars - charCount;
-  const overLimit = charCount > maxChars;
+  const charsRemaining = maxChars ? maxChars - charCount : 0;
+  const overLimit = maxChars ? charCount > maxChars : false;
 
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -197,14 +202,16 @@ export function AiSuggestInput(props: StringInputProps) {
         </Box>
       )}
 
-      {/* Characters remaining or over the limit */}
-      <div style={{ textAlign: 'right', marginTop: '-0.5rem' }}>
-        <Text size={1} style={{ color: overLimit ? 'red' : '#888' }}>
-          {overLimit
-            ? `${Math.abs(charsRemaining)} character${Math.abs(charsRemaining) !== 1 ? 's' : ''} over the limit (${maxChars})`
-            : `${charsRemaining} character${charsRemaining !== 1 ? 's' : ''} remaining`}
-        </Text>
-      </div>
+      {/* Characters remaining or over the limit - only show for fields with limits */}
+      {maxChars && (
+        <div style={{ textAlign: 'right', marginTop: '-0.5rem' }}>
+          <Text size={1} style={{ color: overLimit ? 'red' : '#888' }}>
+            {overLimit
+              ? `${Math.abs(charsRemaining)} character${Math.abs(charsRemaining) !== 1 ? 's' : ''} over the limit (${maxChars})`
+              : `${charsRemaining} character${charsRemaining !== 1 ? 's' : ''} remaining`}
+          </Text>
+        </div>
+      )}
 
       {error && (
         <Card padding={2} tone="critical">

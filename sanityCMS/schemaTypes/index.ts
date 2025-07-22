@@ -3,6 +3,7 @@ import category from './category'
 import article from './article'
 import author from './author'
 import course from './course'
+import courseCategory from './courseCategory'
 import teamMember from './teamMember'
 import trustedClient from './trustedClient'
 import testimonial from './testimonial'
@@ -21,6 +22,7 @@ export const schemaTypes = [
   category,
   blockContent,
   course,
+  courseCategory,
   teamMember,
   trustedClient,
   testimonial,
