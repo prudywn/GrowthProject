@@ -7,39 +7,32 @@ export default defineType({
   type: 'document',
   fields: [
     defineField({
-      name: 'title',
-      title: 'Title',
+      name: 'name',
+      title: 'Service Name',
       type: 'string',
       components: {input: AiSuggestInput},
-      validation: Rule => Rule.required().min(10).max(100)
+      validation: Rule => Rule.required().min(5).max(120)
     }),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
       options: {
-        source: 'title',
+        source: 'name',
         maxLength: 96,
       },
       validation: Rule => Rule.required()
     }),
     defineField({
-      name: 'shortDescription',
-      title: 'Short Description (for cards)',
+      name: 'description',
+      title: 'Service Description',
       type: 'text',
       components: {input: AiSuggestInput},
-      validation: Rule => Rule.required().max(200)
+      validation: Rule => Rule.required().min(50).max(300)
     }),
     defineField({
-      name: 'description',
-      title: 'Full Description',
-      type: 'blockContent',
-      components: {input: AiSuggestInput},
-      validation: Rule => Rule.required()
-    }),
-    defineField({
-      name: 'mainImage',
-      title: 'Main Image',
+      name: 'image',
+      title: 'Service Image',
       type: 'image',
       options: {
         hotspot: true,
@@ -47,22 +40,49 @@ export default defineType({
       validation: Rule => Rule.required()
     }),
     defineField({
-      name: 'subServices',
-      title: 'Sub Services',
-      type: 'array',
-      of: [
+      name: 'category',
+      title: 'Service Category',
+      type: 'reference',
+      to: {type: 'serviceCategory'},
+      validation: Rule => Rule.required()
+    }),
+    defineField({
+      name: 'content',
+      title: 'Service Content',
+      type: 'blockContent',
+      components: {input: AiSuggestInput},
+      description: 'Rich text content for the service - you can format text, add headings, links, images, and copy/paste from HTML',
+      validation: Rule => Rule.required()
+    }),
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'object',
+      fields: [
         {
-          type: 'reference',
-          to: [{type: 'subService'}]
+          name: 'metaTitle',
+          title: 'Meta Title',
+          type: 'string',
+          components: {input: AiSuggestInput},
+          description: 'Title for search engines (50-60 characters)',
+          validation: Rule => Rule.max(60)
+        },
+        {
+          name: 'metaDescription',
+          title: 'Meta Description',
+          type: 'text',
+          components: {input: AiSuggestInput},
+          description: 'Description for search engines (150-160 characters)',
+          validation: Rule => Rule.max(160)
         }
-      ],
-      validation: Rule => Rule.required().min(1)
+      ]
     })
   ],
   preview: {
     select: {
-      title: 'title',
-      media: 'mainImage',
-    },
-  },
+      title: 'name',
+      subtitle: 'category.title',
+      media: 'image',
+    }
+  }
 })
