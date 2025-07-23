@@ -14,6 +14,7 @@ import aboutPageContent from './aboutPageContent'
 import whyUsContent from './whyUsContent'
 import courseLesson from './courseLesson'
 import service from './service'
+import serviceCategory from './serviceCategory'
 import subService from './subService'
 
 export const schemaTypes = [
@@ -33,5 +34,6 @@ export const schemaTypes = [
   whyUsContent,
   courseLesson,
   service,
+  serviceCategory,
   subService,
 ]

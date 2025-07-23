@@ -237,3 +237,66 @@ export const getAllCourseCategoriesQuery = `
     color
   }
 `;
+
+export const getMainServicesQuery = `
+  *[_type == "service" && defined(slug.current)] | order(_createdAt desc) {
+    _id,
+    name,
+    slug,
+    description,
+    "imageSrc": image.asset->url,
+    category->{
+      _id,
+      title,
+      slug,
+      color
+    }
+  }
+`;
+
+export const getAllServicesQuery = `
+  *[_type == "service" && defined(slug.current)] | order(_createdAt desc) {
+    _id,
+    name,
+    slug,
+    description,
+    "imageSrc": image.asset->url,
+    category->{
+      _id,
+      title,
+      slug,
+      color
+    }
+  }
+`;
+
+export const getServiceBySlugQuery = `
+  *[_type == "service" && slug.current == $slug][0]{
+    _id,
+    name,
+    slug,
+    description,
+    image {
+      asset-> { url }
+    },
+    content,
+    category->{
+      _id,
+      title,
+      slug,
+      description,
+      color
+    },
+    seo
+  }
+`;
+
+export const getAllServiceCategoriesQuery = `
+  *[_type == "serviceCategory"] | order(title asc) {
+    _id,
+    title,
+    slug,
+    description,
+    color
+  }
+`;

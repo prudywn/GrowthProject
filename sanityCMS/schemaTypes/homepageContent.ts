@@ -36,21 +36,6 @@ export default defineType({
           title: 'Section Description',
           type: 'text',
           validation: Rule => Rule.required()
-        }),
-        defineField({
-          name: 'featuredServices',
-          title: 'Featured Services',
-          type: 'array',
-          of: [
-            {
-              type: 'reference',
-              to: [{type: 'service'}],
-              options: {
-                disableNew: true
-              }
-            }
-          ],
-          validation: Rule => Rule.required().min(3).max(6)
         })
       ]
     }),
