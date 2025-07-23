@@ -12,7 +12,11 @@ import {
   getMainCoursesQuery,
   getAllCoursesQuery,
   getCourseBySlugQuery,
-  getAllCourseCategoriesQuery
+  getAllCourseCategoriesQuery,
+  getMainServicesQuery,
+  getAllServicesQuery,
+  getServiceBySlugQuery,
+  getAllServiceCategoriesQuery
 } from "./queries";
 
 export const fetchHomepageContent = async () => {
@@ -69,4 +73,23 @@ export const fetchCourseBySlug = async (slug: string) => {
 
 export const fetchCourseCategories = async () => {
   return await sanityClient.fetch(getAllCourseCategoriesQuery);
+};
+
+export const fetchMainServices = async () => {
+  return await sanityClient.fetch(getMainServicesQuery);
+};
+
+export const fetchAllServices = async () => {
+  return await sanityClient.fetch(getAllServicesQuery);
+};
+
+export const fetchServiceBySlug = async (slug: string) => {
+  console.log('Fetching service with slug:', slug);
+  const result = await sanityClient.fetch(getServiceBySlugQuery, { slug });
+  console.log('Service fetch result:', result);
+  return result;
+};
+
+export const fetchServiceCategories = async () => {
+  return await sanityClient.fetch(getAllServiceCategoriesQuery);
 };

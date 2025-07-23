@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
-import { getCachedImageUrl } from "@/lib/sanity/imageCache";
-import { SanityService } from "@/types";
 import { Card } from "@/components/custom/card";
+import { extractPlainText } from "@/lib/utils";
+import type { SimpleService } from "@/types";
 
 export interface ServicesSectionProps {
   title: string;
   description: string;
-  featuredServices: SanityService[];
+  featuredServices: SimpleService[];
 }
 
 export default function ServicesSection({
@@ -53,7 +53,7 @@ export default function ServicesSection({
         {/* See More Services button in small screens */}
         <div className="flex justify-end mt-4 md:hidden">
           <Link href="/services">
-            <button className="rounded-full cursor-pointer w-[200px] bg-[#195872] p-2 text-white text-sm">
+            <button className="rounded-full cursor-pointer w-[200px] bg-[#195872] p-2 text-white text-sm hover:bg-[#2a5d73] transition-colors">
               See More Services {"->"}
             </button>
           </Link>
@@ -64,96 +64,94 @@ export default function ServicesSection({
       <div className="relative">
         {/* Desktop Grid - Show only 3 cards */}
         <div className="hidden lg:grid grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {featuredServices.slice(0, 3).map((service, index) => {
-            const imageUrl = service.mainImage
-              ? getCachedImageUrl(service.mainImage, "medium")
-              : null;
-
-            return (
-              <motion.div
-                key={service._id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.15 }}
-                viewport={{ once: true, amount: 0.3 }}
-              >
-                <Link href={`/services/${service.slug.current}`}>
-                  <Card
-                    title={service.title}
-                    description={service.shortDescription}
-                    imageSrc={imageUrl || ""}
-                  />
-                </Link>
-              </motion.div>
-            );
-          })}
+          {featuredServices.slice(0, 3).map((service, index) => (
+            <motion.div
+              key={service._id}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.15 }}
+              viewport={{ once: true, amount: 0.3 }}
+            >
+              <Card
+                title={service.name || ''}
+                description={extractPlainText(service.description)}
+                imageSrc={service.imageSrc}
+                slug={service.slug?.current}
+                category={service.category && typeof service.category.title === 'string' ? {
+                  title: service.category.title,
+                  color: service.category.color
+                } : undefined}
+                showViewButton={true}
+                viewButtonText="View Service"
+                comingSoonText="Service Details Coming Soon"
+              />
+            </motion.div>
+          ))}
         </div>
 
         {/* Mobile stacked layout (below md) */}
         <div className="flex flex-col gap-6 lg:hidden md:hidden">
-          {featuredServices.slice(0, 3).map((service, index) => {
-            const imageUrl = service.mainImage
-              ? getCachedImageUrl(service.mainImage, "medium")
-              : null;
-
-            return (
-              <motion.div
-                key={service._id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.15 }}
-                viewport={{ once: true, amount: 0.3 }}
-              >
-                <Link href={`/services/${service.slug.current}`}>
-                  <Card
-                    title={service.title}
-                    description={service.shortDescription}
-                    imageSrc={imageUrl || ""}
-                  />
-                </Link>
-              </motion.div>
-            );
-          })}
+          {featuredServices.slice(0, 3).map((service, index) => (
+            <motion.div
+              key={service._id}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.15 }}
+              viewport={{ once: true, amount: 0.3 }}
+            >
+              <Card
+                title={service.name || ''}
+                description={extractPlainText(service.description)}
+                imageSrc={service.imageSrc}
+                slug={service.slug?.current}
+                category={service.category && typeof service.category.title === 'string' ? {
+                  title: service.category.title,
+                  color: service.category.color
+                } : undefined}
+                showViewButton={true}
+                viewButtonText="View Service"
+                comingSoonText="Service Details Coming Soon"
+              />
+            </motion.div>
+          ))}
         </div>
 
         {/* Carousel for md screens only - Show 3 cards with scroll */}
         <div className="hidden md:flex lg:hidden items-center">
           <button
             onClick={() => scroll("left")}
-            className="p-2 disabled:opacity-50"
+            className="p-2 disabled:opacity-50 hover:bg-white/20 rounded-full transition-colors"
             disabled={scrollIndex === 0}
           >
-            <ChevronLeft />
+            <ChevronLeft className={scrollIndex === 0 ? "text-gray-400" : "text-gray-700"} />
           </button>
           <div
             ref={scrollRef}
             className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory w-full px-2"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            {featuredServices.map((service) => {
-              const imageUrl = service.mainImage
-                ? getCachedImageUrl(service.mainImage, "medium")
-                : null;
-
-              return (
-                <div key={service._id} className="flex-shrink-0 w-1/3">
-                  <Link href={`/services/${service.slug.current}`}>
-                    <Card
-                      title={service.title}
-                      description={service.shortDescription}
-                      imageSrc={imageUrl || ""}
-                    />
-                  </Link>
-                </div>
-              );
-            })}
+            {featuredServices.map((service) => (
+              <div key={service._id} className="flex-shrink-0 w-1/3">
+                <Card
+                  title={service.name}
+                  description={service.description}
+                  imageSrc={service.imageSrc}
+                  slug={service.slug?.current}
+                  category={service.category ? {
+                    title: service.category.title,
+                    color: service.category.color
+                  } : undefined}
+                  showViewButton={true}
+                />
+              </div>
+            ))}
           </div>
           <button
             onClick={() => scroll("right")}
-            className="p-2 disabled:opacity-50"
+            className="p-2 disabled:opacity-50 hover:bg-white/20 rounded-full transition-colors"
             disabled={scrollIndex >= Math.max(0, featuredServices.length - 3)}
           >
-            <ChevronRight />
+            <ChevronRight className={scrollIndex >= Math.max(0, featuredServices.length - 3) ? "text-gray-400" : "text-gray-700"} />
           </button>
         </div>
 
@@ -175,14 +173,14 @@ export default function ServicesSection({
       {/* Bottom Row */}
       <div className="flex justify-between md:flex-row flex-col space-y-2 mt-12 mx-6">
         <p className="max-w-[550px] text-[#4D4D4D] text-lg text-start">
-          We offer comprehensive solutions tailored to your business needs and
-          growth objectives.
+          We can also offer Customised Services based on your specifications and
+          business requirements across various domains.
         </p>
 
         {/* Desktop "See More Services" Button */}
         <div className="hidden md:block">
           <Link href="/services">
-            <button className="rounded-full cursor-pointer w-[230px] bg-[#195872] p-2 text-white">
+            <button className="rounded-full cursor-pointer w-[230px] bg-[#195872] p-2 text-white hover:bg-[#2a5d73] transition-colors">
               See More Services {"->"}
             </button>
           </Link>

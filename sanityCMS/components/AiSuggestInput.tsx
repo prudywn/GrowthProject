@@ -65,11 +65,6 @@ export function AiSuggestInput(props: StringInputProps) {
   }, [value, charLimit]);
 
   const maxChars = useMemo(() => {
-    // Skip character counting for blockContent fields as they should be unlimited
-    if (fieldType === 'blockContent') {
-      return null;
-    }
-    
     if (schemaType?.validation) {
       try {
         const fnStr = schemaType.validation.toString();
@@ -81,7 +76,8 @@ export function AiSuggestInput(props: StringInputProps) {
         console.warn('Failed to parse validation rules for maxChars:', error);
       }
     }
-    return 200;
+    // For blockContent, return null to indicate no limit but we still want to show count
+    return fieldType === 'blockContent' ? null : 200;
   }, [schemaType, fieldType]);
 
   const charCount = typeof value === 'string' ? value.length : 0;
@@ -202,13 +198,15 @@ export function AiSuggestInput(props: StringInputProps) {
         </Box>
       )}
 
-      {/* Characters remaining or over the limit - only show for fields with limits */}
-      {maxChars && (
+      {/* Character count display */}
+      {(maxChars || fieldType === 'blockContent') && (
         <div style={{ textAlign: 'right', marginTop: '-0.5rem' }}>
           <Text size={1} style={{ color: overLimit ? 'red' : '#888' }}>
-            {overLimit
-              ? `${Math.abs(charsRemaining)} character${Math.abs(charsRemaining) !== 1 ? 's' : ''} over the limit (${maxChars})`
-              : `${charsRemaining} character${charsRemaining !== 1 ? 's' : ''} remaining`}
+            {fieldType === 'blockContent' 
+              ? `${charCount} character${charCount !== 1 ? 's' : ''}`
+              : overLimit
+                ? `${Math.abs(charsRemaining)} character${Math.abs(charsRemaining) !== 1 ? 's' : ''} over the limit (${maxChars})`
+                : `${charsRemaining} character${charsRemaining !== 1 ? 's' : ''} remaining`}
           </Text>
         </div>
       )}
